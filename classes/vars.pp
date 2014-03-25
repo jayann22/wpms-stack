@@ -1,22 +1,22 @@
-#Specifies Apache package name, which is being provided to package manager such as yum. 
+#Specifies package name for apache installation, which is being provided to package manager such as yum. 
 $apache = "httpd"
 
-#Specifies php package name, which is being provided to package manager such as yum.
+#Specifies package name for php installation, which is being provided to package manager such as yum.
 $phpv = "php"
 
-#Specifies mysql-server package name, which is being provided to package manager such as yum.
+#Specifies package name for mysql server installation, which is being provided to package manager such as yum.
 $mysqlpkg = "mysql-server"
 
-#Specifies mysql service name to start
+#Specifies mysql service name to start or stop
 $mysqld = "mysqld"
 
 #Specifies mysql server root password
 $current_mysqlroot_pass =""
 
 #Specifies the method by which will be downloaded wordpress files.
-#Can be set to WEB or GIT. 
-#In case if is set to WEB as $wp_get_address must be provided the web #URL from which the wordpress tarball should be download. 
-#In case if set to GIT, as $wp_get_address must be provided the git #clone url.
+#This variable can be set to "WEB" or "GIT". 
+#In case if is set to WEB as $wp_get_address must be provided the web URL from which the wordpress tarball should be download. 
+#In case if set to GIT, as $wp_get_address must be provided the git clone url.
 $wrp_metod = "GIT"
 $wp_get_address ="git://core.git.wordpress.org/"
 
