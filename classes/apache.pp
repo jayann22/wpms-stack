@@ -2,7 +2,7 @@ class apache {
     $apkg = [ $apache, $phpv, "mod_ssl", "$phpv-mysql" ]
 
  notify { 'note-install-apache':
-             message => 'SARTING APACHE INSTALLATION',
+             message => 'STARTING APACHE INSTALLATION',
 	}
 	
     package { $apkg:
