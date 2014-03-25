@@ -11,7 +11,7 @@ install_wp_mysql{"mysqldb":
         wp_dbpass => $wrp_dbpass,
         wp_dbhost_access => $wrp_dbhost_access,
 	mysqlconf => $mysqlconfigure,
-	mysqlinstall => $mysqdinstall,
+	mysqlinstall => $mysqldinstall,
 	require => notify['note-db-run']
           }
 
