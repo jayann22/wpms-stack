@@ -1,10 +1,12 @@
 #!/bin/bash
 
+#This script is intended for automatic wordpress multisite installation on Centos 6.5 x86_64 minimal installation machines 
+
 file=classes/vars.pp
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 i=0
 
-#The comments for each variable. If script determines variable withh comment, it will ask from user on command line.
+#The comments for each variable. If script determines variable with comment, it will ask user on command line.
 
 #apache="Apache Comment"
 #phpv="php Comment"
@@ -129,3 +131,16 @@ wrp_dbhost_access="Please provide the host from which will the user have access 
            fi
 
        done
+
+#After Config file successful configuration we can continue tu puppet installation
+
+#Install wget
+yum install -y wget
+
+#Install epel repository for Centos 6.5, this is needed for puppet installation
+wget http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+wget http://rpms.famillecollet.com/enterprise/remi-release-5.rpm
+sudo rpm -Uvh remi-release-5*.rpm epel-release-5*.rpm
+
+#Install puppet
+yum install -y puppet
