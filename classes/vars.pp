@@ -17,11 +17,11 @@ $current_mysqlroot_pass =""
 #This variable can be set to "WEB" or "GIT". 
 #In case if is set to WEB as $wp_get_address must be provided the web URL from which the wordpress tarball should be download. 
 #In case if set to GIT, as $wp_get_address must be provided the git clone url.
-$wrp_metod = "GIT"
-$wp_get_address ="git://core.git.wordpress.org/"
+#$wrp_metod = "GIT"
+#$wp_get_address ="git://core.git.wordpress.org/"
 
-#$wrp_metod = "WEB"
-#$wp_get_address ="https://wordpress.org/latest.tar.gz"
+$wrp_metod = "WEB"
+$wp_get_address ="https://wordpress.org/latest.tar.gz"
 
 #Specifies the directory into which wordpress should be installed.
 $wp_local_path = "/var/www/html/"
