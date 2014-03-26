@@ -5,7 +5,7 @@ Following are intructions.
 1) Copy vagrant directory to your local computer.
 
 2) Run "vagrant up" command in vagrant directory.
-   This will download base image chef/centos-6.5 from vagrant cloud and start new vm with follwing options.
+   This will download base image chef/centos-6.5 from vagrant cloud and start new virtual machine with following options.
    2.1) local ip address 192.168.55.55.
    2.2) host:8090 => vm:80 port forwarding setup.
    2.3) clone of wp-multisite repository in /home/vagrant directory.
