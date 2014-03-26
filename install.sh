@@ -5,7 +5,7 @@
 file=classes/vars.pp
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 i=0
-
+separator="------------------------------------------------------"
 #The comments for each variable. If script determines variable with comment, it will ask user on command line.
 
 #apache="Apache Comment"
@@ -122,9 +122,11 @@ wrp_dbhost_access="Please provide the host from which will the user have access 
                 if [[ -z $newvalue ]]
                  then
 		  echo "Leaving as default..."
-		  echo $var=$defaultvalue
+		  echo -e "$var=$defaultvalue"
+		  echo -e "$separator\n"
 		 else
-		  echo changing defaultvalue:$defaultvalue of $var to $newvalue in $file
+		  echo -e "changing defaultvalue:$defaultvalue of $var to $newvalue in $file"
+		  echo -e "$separator\n"
 		  sed -i "s,$var.*,$var=$newvalue," $file
 	        fi
 
@@ -140,7 +142,7 @@ yum install -y wget
 #Install epel repository for Centos 6.5, this is needed for puppet installation
 wget http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
 wget http://rpms.famillecollet.com/enterprise/remi-release-5.rpm
-sudo rpm -Uvh remi-release-5*.rpm epel-release-5*.rpm
+rpm -Uvh remi-release-5*.rpm epel-release-5*.rpm
 
 #Install puppet
 yum install -y puppet
