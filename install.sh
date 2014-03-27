@@ -142,7 +142,7 @@ wrp_plugin_MU="Please provide if Multisite Plugin Manager will be installed"
                    then
                      while :
                       do
-                        if [[ $newvalue == "Yes" ]] || [[ $newvalue == "No" ]] || [[ -z $newvalue$ ]]
+                        if [[ $newvalue == "Yes" ]] || [[ $newvalue == "No" ]] || [[ -z $newvalue ]]
                          then
                           break
                          else
