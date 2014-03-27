@@ -12,13 +12,13 @@ separator="------------------------------------------------------"
 #phpv="php Comment"
 #mysqlpkg="mysqlpkg Comment"
 #mysqld="mysqld Comment"
-current_mysqlroot_pass="Root password of mysql"
-wrp_metod="Please provide method by which worpdress must be installed.\nThe method can be GIT or WEB"
+current_mysqlroot_pass="Please provide root password of mysql"
+wrp_metod="Please provide method by which worpdress must be installed.The method can be GIT or WEB"
 wp_get_address="Please provide URL from which the wordpress can be downloaded"
 wp_local_path="Please provide the full path of directory into which wordpress should be installed"
 wrp_owner="Please provide owner of wordpress install directory"
 wrp_group="Please provide group of wordpress install directory"
-mysqlconfigure="Please answer yes if the script shall create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database "
+mysqlconfigure="Please answer yes if the script shall create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database"
 mysqldinstall="Please answer yes if the script shall install mysql-server"
 wrp_dbname="Please provide database name for wordpress"
 wrp_dbuser="Please provide database user for wordpress"
@@ -53,8 +53,7 @@ wrp_dbhost_access="Please provide the host from which will the user have access 
 	#Proceed if there exists comment for this variable on top of script
           if [[ ! -z  ${!var} ]] 
            then
-            echo -e "${!var}"
-	    echo "The DEFAULT Value is: $defaultvalue"
+            echo -e -n "${!var} - (The default Value is $defaultvalue): "
 
 	    read newvalue
 
@@ -125,7 +124,7 @@ wrp_dbhost_access="Please provide the host from which will the user have access 
 		  echo -e "$var=$defaultvalue"
 		  echo -e "$separator\n"
 		 else
-		  echo -e "changing defaultvalue:$defaultvalue of $var to $newvalue in $file"
+		  echo -e "changing defaultvalue \"$defaultvalue\" of $var to \"$newvalue\" in $file"
 		  echo -e "$separator\n"
 		  sed -i "s,$var.*,$var=$newvalue," $file
 	        fi
@@ -137,12 +136,12 @@ wrp_dbhost_access="Please provide the host from which will the user have access 
 #After Config file successful configuration we can continue tu puppet installation
 
 #Install wget
-yum install -y wget
+#yum install -y wget
 
 #Install epel repository for Centos 6.5, this is needed for puppet installation
-wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
-rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
+#wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+#wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+#rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
 
 #Install puppet
-yum install -y puppet
+#yum install -y puppet
