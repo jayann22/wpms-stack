@@ -25,8 +25,8 @@ wp_get_address="Please provide URL from which the wordpress can be downloaded"
 wp_local_path="Please provide the full path of directory into which wordpress should be installed"
 wrp_owner="Please provide owner of wordpress install directory"
 wrp_group="Please provide group of wordpress install directory"
-mysqlconfigure="Please answer yes if the script shall create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database"
-mysqldinstall="Please answer yes if the script shall install mysql-server"
+mysqlconfigure="Please answer Yes if the script shall create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database"
+mysqldinstall="Please answer Yes if the script shall install mysql-server"
 wrp_dbname="Please provide database name for wordpress"
 wrp_dbuser="Please provide database user for wordpress"
 wrp_dbpass="Please provide password for wordpress database user"
@@ -133,7 +133,7 @@ wrp_dbhost_access="Please provide the host from which will the user have access 
 		 else
 		  echo -e "changing defaultvalue \"$defaultvalue\" of $var to \"$newvalue\" in $file"
 		  echo -e "$separator\n"
-		  sed -i "s,$var.*,$var=$newvalue," $file
+		  sed -i "s,$var.*,$var=\"$newvalue\"," $file
 	        fi
 
            fi
@@ -143,15 +143,51 @@ wrp_dbhost_access="Please provide the host from which will the user have access 
 #After Config file successful configuration we can continue tu puppet installation
 
 #Install wget
+echo -e "Installing wget...\n"
 yum install -y wget
 
 #Install epel repository for Centos 6.5, this is needed for puppet installation
+echo -e "Installing EPEL repository...\n"
 wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
 rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
 
 #Install puppet
+echo -e "Installing puppet...\n"
 yum install -y puppet
 
 #run puppet
 puppet apply site.pp
+
+ #Insert Values of new config file into sum array, for final display to user.
+ j=0
+ while read line
+       do
+
+        if [[ ! $line =~ ^#.* ]] && [[ ! $line =~ "^\ +$" ]] && [[ ! -z $line ]]
+         then
+          sum[$j]=`echo $line | tr -d ' '`
+          j=$((j+1))
+        fi
+
+
+     done < $file
+
+echo -e "Please Find below options that you have entered during installation.\n"
+
+ #Print new values from confg file to display that user could save them.
+ for k in "${sum[@]}"
+  do
+	var=`echo $k | cut -d "\$" -f2 | cut -d "=" -f1`
+
+        #Cut present value ov variable and assign to $defaultvalue.
+        value=`echo $k | cut -d "\$" -f2 | cut -d "=" -f2`
+
+      if [[ ! -z  ${!var} ]] 
+        then
+         echo -e " $var = $value "
+      fi
+ 
+   done
+
+
