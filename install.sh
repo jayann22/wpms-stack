@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Make sure only root can run our script
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+
 #This script is intended for automatic wordpress multisite installation on Centos 6.5 x86_64 minimal installation machines 
 
 file=classes/vars.pp
