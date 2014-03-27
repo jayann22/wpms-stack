@@ -142,12 +142,12 @@ wrp_dbhost_access="Please provide the host from which will the user have access 
 #After Config file successful configuration we can continue tu puppet installation
 
 #Install wget
-#yum install -y wget
+yum install -y wget
 
 #Install epel repository for Centos 6.5, this is needed for puppet installation
-#wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-#wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
-#rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
+wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
 
 #Install puppet
-#yum install -y puppet
+yum install -y puppet
