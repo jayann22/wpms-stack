@@ -7,7 +7,7 @@ class apache {
 	
     package { $apkg:
 	ensure => present,
-	require => notify ['note-install-apache']
+	require => Notify ['note-install-apache']
     }
 
     service { $apache:

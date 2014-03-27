@@ -12,7 +12,7 @@ install_wp_mysql{"mysqldb":
         wp_dbhost_access => $wrp_dbhost_access,
 	mysqlconf => $mysqlconfigure,
 	mysqlinstall => $mysqldinstall,
-	require => notify['note-db-run']
+	require => Notify['note-db-run']
           }
 
 install_wp{"wordpress":
@@ -22,7 +22,7 @@ install_wp{"wordpress":
 	web_owner => $wrp_owner,
 	web_group => $wrp_group,
         mode => 0400,
-        require => notify['note-start-WP']
+        require => Notify['note-start-WP']
           }
 
 notify { 'note-start-WP':
