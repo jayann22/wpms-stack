@@ -6,12 +6,26 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+# Print help
+
+if [[ $1 == -h ]] || [[  $1 == --help  ]] 
+  then
+   echo -e "Listing available options that could be passed to install.sh.\n 
+-h or --config:    Print existing configuration varables with their values"
+
+   exit 1
+fi
+
+
+
 #This script is intended for automatic wordpress multisite installation on Centos 6.5 x86_64 minimal installation machines 
 
 file=classes/vars.pp
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 i=0
 separator="------------------------------------------------------"
+
+
 #The comments for each variable. If script determines variable with comment, it will ask user on command line.
 
 #apache="Apache Comment"
@@ -42,6 +56,44 @@ wrp_admin_email="Please provide email address of administrator account for wp-mu
 wrp_admin_user="Please provide username of administrator account for wp-multisite-stack"
 wrp_admin_password="Please provide password of administrator account for wp-multisite-stack"
 wrp_plugin_MU="Please provide if Multisite Plugin Manager will be installed"
+
+
+#If install.sh runs with option --config , display the existing confg variables
+if [[ $1 == "--config" ]] || [[ $1 == "-c" ]]; then
+   echo -e "Please find below existing configuration variables and their values.\n" 
+     j=0
+     while read line
+       do
+
+        if [[ ! $line =~ ^#.* ]] && [[ ! $line =~ "^\ +$" ]] && [[ ! -z $line ]]
+         then
+          info[$j]=`echo $line | tr -d ' '`
+          j=$((j+1))
+        fi
+
+
+     done < $file
+ #Print new values from confg file to display that user could save them.
+ for k in "${info[@]}"
+  do
+        var=`echo $k | cut -d "\$" -f2 | cut -d "=" -f1`
+
+        #Cut present value ov variable and assign to $defaultvalue.
+        value=`echo $k | cut -d "\$" -f2 | cut -d "=" -f2`
+
+      if [[ ! -z  ${!var} ]]
+        then
+         echo -e " $var = $value "
+      fi
+ 
+   done
+
+
+
+   exit 1
+fi
+
+
 
 #Read Configuration file and insert not commented non empty values into vars array
      while read line
