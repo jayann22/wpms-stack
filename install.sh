@@ -7,6 +7,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 #This script is intended for automatic wordpress multisite installation on Centos 6.5 x86_64 minimal installation machines 
+cd puppet
 
 file=classes/vars.pp
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -151,3 +152,6 @@ rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
 
 #Install puppet
 yum install -y puppet
+
+#run puppet
+puppet apply site.pp
