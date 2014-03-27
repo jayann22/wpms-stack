@@ -85,3 +85,4 @@ $wrp_admin_password = "admin"
 
 #Specifies if Multisite Plugin Manager will be installed.
 $wrp_plugin_MU = "Yes"
+
