@@ -12,10 +12,8 @@ Following are intructions.
    2.2) host:8090 => vm:80 port forwarding setup.
 	
 3) After the new vm launched, you can easily login by running command "vagrant ssh" and install wp-multisite-stack by running following commands.
-  3.1) [vagrant]# sudo bash
-  3.2) [root]#    cd /vagrant/wp-multisite-stack
-  3.3) [root]#    ./install.sh
-  3.4) [root]#    puppet apply site.pp
+  3.1) [vagrant]# cd /var/setup && sudo ./install.sh
+  3.2) [vagrant]# sudo puppet apply /var/setup/puppet/site.pp
 
 4) You can find your wp-multisite-stack installation by pointing browser to one of the following urls.
   4.1) wp-multisite-stack.local.link7.co 
