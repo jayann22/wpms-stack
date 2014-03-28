@@ -2,6 +2,7 @@ node 'default' {
  case $operatingsystem {
       centos, redhat: { 
       import 'classes/*.pp'
+      import '/var/configs/env-vars.pp'
 
 include messages
 
