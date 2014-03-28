@@ -149,7 +149,7 @@ fi
                    then
                      while :
                       do
-                        if [[ $newvalue =~ ^http://.+ ]] || [[ $newvalue =~ ^git://.+ ]] || [[ -z $newvalue ]]
+                        if [[ $newvalue =~ ^http://.+ ]] || [[ $newvalue =~ ^https://.+ ]] || [[ $newvalue =~ ^git://.+ ]] || [[ -z $newvalue ]]
                          then
                           break
                          else
