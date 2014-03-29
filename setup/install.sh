@@ -11,16 +11,17 @@ fi
 if [[ $1 == -h ]] || [[  $1 == --help  ]] 
   then
    echo -e "Listing available options that could be passed to install.sh.\n 
--h or --config:    Print existing configuration varables with their values"
-
+-c, --config:    Print existing configuration varables with their values
+-h, --help:	Print this Help"
    exit 1
 fi
 
 #copies samle vars.pp file to env-vars.pp so it doesn't overwrite the sample.
-cp ../configs/sample-vars.pp ../configs/env-vars.pp
+#cp ../configs/sample-vars.pp ../configs/env-vars.pp
 
 #This script is intended for automatic wordpress multisite installation on Centos 6.5 x86_64 minimal installation machines 
-
+sample_file=../configs/sample-vars.pp
+tmp_file=/tmp/env-vars`date +%N`.pp
 file=../configs/env-vars.pp
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 i=0
@@ -74,6 +75,8 @@ if [[ $1 == "--config" ]] || [[ $1 == "-c" ]]; then
 
 
      done < $file
+
+
  #Print new values from confg file to display that user could save them.
  for k in "${info[@]}"
   do
@@ -96,7 +99,7 @@ fi
 
 
 
-#Read Configuration file and insert not commented non empty values into vars array
+#Read Sample Configuration file and insert not commented non empty values into vars array
      while read line
        do
 
@@ -107,7 +110,7 @@ fi
         fi
 
 
-     done < $file
+     done < $sample_file
 
 
     #Read each element in array, cut/assign appropriate values, read new value on command line and change in cofig file if needed.
@@ -210,63 +213,94 @@ fi
 		#else print message and leave as it is.
                 if [[ -z $newvalue ]]
                  then
+		  echo -e "$i" >> $tmp_file
+
 		  echo "Leaving as default..."
-		  echo -e "$var=$defaultvalue"
-		  echo -e "$separator\n"
+		  echo -e "$var=$defaultvalue\n$separator\n"
 		 else
-		  echo -e "changing defaultvalue $defaultvalue of $var to \"$newvalue\" in $file"
-		  echo -e "$separator\n"
-		  sed -i "s,$var.*,$var=\"$newvalue\"," $file
+		  echo -e "changing defaultvalue $defaultvalue of $var to \"$newvalue\" in $file\n\n$separator\n"
+                  echo "\$$var=\"$newvalue\"" >> $tmp_file
 	        fi
 
            fi
-
        done
 
-#After Config file successful configuration we can continue tu puppet installation
+while :
+do
+	echo -e -n "`cat $tmp_file`\n\nPlease confirm settings that you have entered: Y/N:"
+
+  read line
+
+	if [[ `echo $line | tr '[:upper:]' '[:lower:]'` == y ]]
+		then
+		cp -f $tmp_file $file
+		rm $tmp_file 
+		break
+	fi
+
+	  if [[ `echo $line | tr '[:upper:]' '[:lower:]'` == n ]] 
+                then 
+               echo -e "You didn't generate configuration file...\nPlease run install.sh to generate configuration file\nexiting..."
+	       rm $tmp_file
+	       exit 1
+	  fi
+
+
+done
+#After Config file successful configuration we can continue to puppet installation
 
 #Install wget
 echo -e "Installing wget...\n"
+
+if [[ ! `rpm -qa | grep wget` ]]
+then
 yum install -y wget
+else
+echo "Wget is already installed"
+fi
+
+if [[ $? -ne 0 ]]
+ then
+  echo "Wget Installation failed\nexiting..."
+  exit 1
+fi
 
 #Install epel repository for Centos 6.5, this is needed for puppet installation
-echo -e "Installing EPEL repository...\n"
-wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
-rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
+#echo -e "Installing EPEL repository...\n"
+wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm -O /tmp/epel-release-6-8.noarch.rpm &&\
+wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm -O /tmp/remi-release-6.rpm
+
+if [[ $? -ne 0 ]]
+ then
+  echo -e "Getting Epel repository packages failed\nexiting..."
+  exit 1
+fi
+
+rpm -Uvh /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
+rm -rf /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
 
 #Install puppet
+
 echo -e "Installing puppet...\n"
-yum install -y puppet
 
+if [[ ! `rpm -qa | grep puppet` ]]
+then
+ yum install -y puppet
+else
+ echo "puppet is already installed"
+fi
 
- #Insert Values of new config file into sum array, for final display to user.
- j=0
- while read line
-       do
+if [[ $? -ne 0 ]]
+ then
+  echo -e "Puppet Installation failed\nexiting..."
+  exit 1
+fi
 
-        if [[ ! $line =~ ^#.* ]] && [[ ! $line =~ "^\ +$" ]] && [[ ! -z $line ]]
-         then
-          sum[$j]=`echo $line | tr -d ' '`
-          j=$((j+1))
-        fi
-
-
-     done < $file
-
-echo -e "Please Find below options that you have entered during installation.\n"
-
- #Print new values from confg file to display that user could save them.
- for k in "${sum[@]}"
-  do
-	var=`echo $k | cut -d "\$" -f2 | cut -d "=" -f1`
-
-        #Cut present value ov variable and assign to $defaultvalue.
-        value=`echo $k | cut -d "\$" -f2 | cut -d "=" -f2`
-
-      if [[ ! -z  ${!var} ]]
-        then
-         echo -e " $var = $value "
-      fi
- 
-   done
+echo -e "Installing WP-Multisite-Stack...\n"
+ puppet apply puppet/site.pp
+if [[ $? -ne 0 ]]
+ then
+  echo -e "Puppet Installation failed\nexiting..."
+  else
+  echo "WP-Multisite-Stack is installed Successful"
+fi
