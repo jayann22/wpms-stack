@@ -57,7 +57,7 @@ wrp_title="Please provide title of wp-multisite-stack"
 wrp_admin_email="Please provide email address of administrator account for wp-multisite-stack"
 wrp_admin_user="Please provide username of administrator account for wp-multisite-stack"
 wrp_admin_password="Please provide password of administrator account for wp-multisite-stack"
-wrp_plugin_MU="Please provide if Multisite Plugin Manager will be installed"
+wrp_plugin_MU="Please provide if WordPress MU Domain Mapping Plugin will be installed"
 
 
 #If install.sh runs with option --config , display the existing confg variables
