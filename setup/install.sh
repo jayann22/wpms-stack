@@ -266,7 +266,8 @@ if [[ $? -ne 0 ]]
 fi
 
 #Install epel repository for Centos 6.5, this is needed for puppet installation
-#echo -e "Installing EPEL repository...\n"
+
+echo -e "Downloading EPEL repository packages...\n"
 wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm -O /tmp/epel-release-6-8.noarch.rpm &&\
 wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm -O /tmp/remi-release-6.rpm
 
@@ -276,11 +277,19 @@ if [[ $? -ne 0 ]]
   exit 1
 fi
 
-rpm -Uvh /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
-rm -rf /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
+#Install EPEL repos and exit script if failed
 
-#Install puppet
+echo -e "Installing EPEL repository packages...\n"
+if [[ `rpm -Uvh /tmp/remi-release-6*.rpm` ]] && [[ `rpm -Uv /tmp/epel-release-6*.rpm` ]]
+ then 
+  rm -rf /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
+ else
+  rm -rf /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
+  echo -e "Installation of EPEL repository packages failed\nexiting..."
+  exit 1
+fi
 
+#Install puppet if it is not installed, exit if installation failed
 echo -e "Installing puppet...\n"
 
 if [[ ! `rpm -qa | grep puppet` ]]
@@ -296,6 +305,7 @@ if [[ $? -ne 0 ]]
   exit 1
 fi
 
+#Start wp-multisite installation, with puppet apply, check if failed,exit with message
 echo -e "Installing WP-Multisite-Stack...\n"
  puppet apply puppet/site.pp
 if [[ $? -ne 0 ]]
