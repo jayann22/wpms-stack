@@ -44,7 +44,7 @@ git pull hub master
 exec git-update-server-info
 EOM
 
-chown +x $FILE
+chmod +x $FILE
 
 
 FILE="/var/wpms-stack/.git/hooks/post-commit"
@@ -60,7 +60,7 @@ echo
 git push hub
 EOM
 
-chown +x $FILE
+chmod +x $FILE
 
 # user can now push-pull from server repo through ssh
 # server repo url is: ssh://USER@SERVERIP:PORT/var/wpms-stack.git
