@@ -16,6 +16,12 @@ echo "This script must be run as root" 1>&2
    exit 1
 fi
 
+echo -e "Installing and enabling rpmforge extras repository..."
+rpm -i 'http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm'
+rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt
+sed -i '15,20s/enabled = 0/enabled = 1/' /etc/yum.repos.d/rpmforge.repo
+
+
 echo -e "Installing git...\n"
 yum install -y git
 
