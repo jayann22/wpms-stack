@@ -69,7 +69,7 @@ $wrp_db_prefix = "wp_"
 $wrpcli = "https://raw.github.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
 
 #Specifies the domain name of wp-multisite-stack.
-$wrp_url = "wp-multisite-stack.link7.co"
+$wrp_url = "wp-multisite-stack.local.link7.co"
 
 #Specifies title of wp-multisite-stack
 $wrp_title = "WP Multisite"
