@@ -1,6 +1,9 @@
 #!/bin/bash
 
 
+# can download & execute this script on your server with the following command 
+# $ curl https://raw.githubusercontent.com/Link7/wpms-stack/master/setup/scripts/gitinstall.sh | sudo bash
+
 # Make sure only root can run our script
 if [[ $EUID -ne 0 ]]; then
 echo "This script must be run as root" 1>&2
@@ -12,11 +15,9 @@ yum install -y git
 
 # clone wpms-stack repo onto server
 git clone --bare https://github.com/Link7/wpms-stack.git /var/wpms-stack.git
-chown -R vagrant /var/wpms-stack.git
 
 # create location where repo will be checked out
 git init /var/wpms-stack
-chown -R vagrant /var/wpms-stack
 
 # add server git repo as remote to checked out dir
 cd /var/wpms-stack
@@ -43,6 +44,7 @@ git pull hub master
 exec git-update-server-info
 EOM
 
+chown +x $FILE
 
 
 FILE="/var/wpms-stack/.git/hooks/post-commit"
@@ -57,6 +59,8 @@ echo
 
 git push hub
 EOM
+
+chown +x $FILE
 
 # user can now push-pull from server repo through ssh
 # server repo url is: ssh://USER@SERVERIP:PORT/var/wpms-stack.git
