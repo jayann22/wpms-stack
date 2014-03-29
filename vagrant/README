@@ -3,8 +3,8 @@ This directory contains Vagrantfile and bootstrap script for fast deploy of wp-m
 Following are intructions.
 
 1) Clone wp-multisite-stack repo on your local pc and go to vagrant folder.
-   1.1) git clone https://github.com/Link7/wp-multisite-stack.git
-   1.2) cd wp-multisite-stack/vagrant
+   1.1) git clone https://github.com/Link7/wpms-stack.git
+   1.2) cd wpms-stack/vagrant
 
 2) Run "vagrant up" command in vagrant directory.
    This will download base image chef/centos-6.5 from vagrant cloud and start new virtual machine with following options.
@@ -15,5 +15,5 @@ Following are intructions.
   3.1) [vagrant]# cd /var/setup && sudo ./install.sh
   3.2) [vagrant]# sudo puppet apply /var/setup/puppet/site.pp
 
-4) You can find your wp-multisite-stack installation by pointing browser to one of the following urls.
+4) You can find your wpms-stack installation by pointing browser to one of the following urls.
   4.1) wp-multisite-stack.local.link7.co 
