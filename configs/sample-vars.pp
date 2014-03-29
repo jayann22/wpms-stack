@@ -32,11 +32,11 @@ $wrp_owner = "apache"
 #Specifies Group of wordpress install directory
 $wrp_group = "apache"
 
-#Specifies whether to create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database. 
-$mysqlconfigure="Yes"
-
 #Specifies whether to install mysql-server.
 $mysqldinstall="Yes"
+
+#Specifies whether to create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database. 
+$mysqlconfigure="Yes"
 
 #Specifies database name for wordpress
 $wrp_dbname = "wordpress"
@@ -75,7 +75,7 @@ $wrp_url = "wp-multisite-stack.local.link7.co"
 $wrp_title = "WP Multisite"
 
 #Specifies email address of administrator account for wp-multisite-stack.
-$wrp_admin_email = "admin@localhost"
+$wrp_admin_email = "admin@localhost.co"
 
 #Specifies username of administrator account for wp-multisite-stack.
 $wrp_admin_user = "admin"
