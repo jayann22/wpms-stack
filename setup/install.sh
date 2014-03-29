@@ -17,11 +17,11 @@ if [[ $1 == -h ]] || [[  $1 == --help  ]]
 fi
 
 #copies samle vars.pp file to env-vars.pp so it doesn't overwrite the sample.
-cp /var/configs/sample-vars.pp /var/configs/env-vars.pp
+cp ../configs/sample-vars.pp ../configs/env-vars.pp
 
 #This script is intended for automatic wordpress multisite installation on Centos 6.5 x86_64 minimal installation machines 
 
-file=/var/configs/env-vars.pp
+file=../configs/env-vars.pp
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 i=0
 separator="------------------------------------------------------"
