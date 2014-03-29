@@ -6,7 +6,7 @@
 # and after that it will run the install.sh script
 
 # login to your server and run the following command to get it started
-# curl https://raw.githubusercontent.com/Link7/wpms-stack/master/setup/serverinstall.sh | sudo bash
+# curl https://raw.githubusercontent.com/Link7/wpms-stack/master/setup/scripts/serverinstall.sh | sudo bash
 
 
 
