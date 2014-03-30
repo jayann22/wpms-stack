@@ -3,7 +3,7 @@ class mysql {
     $mypkg = [ $mysqlpkg, 'mysql' ]
     
  notify { 'note-install-mysql':
-             message => 'SARTING MYSQL INSTALLATION',
+             message => 'STARTING MYSQL INSTALLATION',
 #             require => Class[ 'apache' ]
         }
 
