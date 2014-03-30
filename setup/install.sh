@@ -289,7 +289,7 @@ fi
 #Install EPEL repos and exit script if failed
 
 echo -e "Installing EPEL repository packages...\n"
-if [[ `rpm -Uvh /tmp/remi-release-6*.rpm` ]] && [[ `rpm -Uv /tmp/epel-release-6*.rpm` ]]
+if [[ `rpm -Uv /tmp/epel-release-6*.rpm` ]] && [[ `rpm -Uvh /tmp/remi-release-6*.rpm` ]]
  then 
   rm -rf /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
  else
