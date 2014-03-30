@@ -38,6 +38,7 @@ current_mysqlroot_pass="Please provide root password of mysql"
 wrp_metod="Please provide method by which worpdress must be installed.The method can be GIT or WEB"
 wp_get_address="Please provide URL from which the wordpress can be downloaded"
 wp_local_path="Please provide the full path of directory into which wordpress should be installed"
+wp_apache_local_path="Please provide the full path of public apache directory, which should be linked to wordpress install directory"
 wrp_owner="Please provide owner of wordpress install directory"
 wrp_group="Please provide group of wordpress install directory"
 mysqlconfigure="Please answer Yes if the script shall create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database"
@@ -221,9 +222,14 @@ fi
 		  echo -e "changing defaultvalue $defaultvalue of $var to \"$newvalue\" in $file\n\n$separator\n"
                   echo "\$$var=\"$newvalue\"" >> $tmp_file
 	        fi
+	     else
+	   echo "$i" >> $tmp_file 
 
            fi
+
        done
+
+
 
 while :
 do
@@ -245,8 +251,11 @@ do
 	       exit 1
 	  fi
 
-
 done
+
+
+
+
 #After Config file successful configuration we can continue to puppet installation
 
 #Install wget
@@ -307,7 +316,9 @@ fi
 
 #Start wp-multisite installation, with puppet apply, check if failed,exit with message
 echo -e "Installing WP-Multisite-Stack...\n"
- puppet apply puppet/site.pp
+
+ puppet apply puppet/manifests/site.pp
+
 if [[ $? -ne 0 ]]
  then
   echo -e "Puppet Installation failed\nexiting..."

@@ -2,7 +2,7 @@
 $apache = "httpd"
 
 #Specifies package name for php installation, which is being provided to package manager such as yum.
-$phpv = "php"
+$phpv = "php53"
 
 #Specifies package name for mysql server installation, which is being provided to package manager such as yum.
 $mysqlpkg = "mysql-server"
@@ -23,8 +23,17 @@ $mysqld = "mysqld"
 $wrp_metod="WEB"
 $wp_get_address ="https://wordpress.org/latest.tar.gz"
 
+#Specifies the full path of public apache directory, which should be linked to wordpress install directory"
+$wp_apache_local_path="/var/www/wordpress"
+
+#Apache conf file
+$apache_conf_file="/etc/httpd/conf/httpd.conf"
+
 #Specifies the directory into which wordpress should be installed.
-$wp_local_path = "/var/www/html/"
+$wp_local_path = "/var/wpms-stack/www"
+
+#apache parameters
+$allowoverride="All"
 
 #Specifies Owner of wordpress install directory
 $wrp_owner = "apache"
@@ -32,11 +41,11 @@ $wrp_owner = "apache"
 #Specifies Group of wordpress install directory
 $wrp_group = "apache"
 
-#Specifies whether to install mysql-server.
-$mysqldinstall="Yes"
-
 #Specifies whether to create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database. 
 $mysqlconfigure="Yes"
+
+#Specifies whether to install mysql-server.
+$mysqldinstall="Yes"
 
 #Specifies database name for wordpress
 $wrp_dbname = "wordpress"
@@ -69,13 +78,13 @@ $wrp_db_prefix = "wp_"
 $wrpcli = "https://raw.github.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
 
 #Specifies the domain name of wp-multisite-stack.
-$wrp_url = "wp-multisite-stack.local.link7.co"
+$wrp_url = "wp-multisite-stack.link7.co"
 
 #Specifies title of wp-multisite-stack
 $wrp_title = "WP Multisite"
 
 #Specifies email address of administrator account for wp-multisite-stack.
-$wrp_admin_email = "admin@localhost.co"
+$wrp_admin_email = "admin@localhost"
 
 #Specifies username of administrator account for wp-multisite-stack.
 $wrp_admin_user = "admin"
