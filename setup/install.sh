@@ -52,14 +52,14 @@ wrp_mysql_port="Please provide the mysql port to which worpdress shall connect"
 wrp_mysqladm_user="Please provide the username which has privileges to grant accesses and create wp database on mysql server, e.g. root"
 wrp_mysqladm_pass="Please provide the password for mysql admin user"
 wrp_db_prefix="Please provide the database prefix, with which will be created tables"
-wrpcli="Please provide URL for Worpdress CLI"
+#wrpcli="Please provide URL for Worpdress CLI"
 wrp_url="Please provide the domain name of wp-multisite-stack"
 wrp_title="Please provide title of wp-multisite-stack"
 wrp_admin_email="Please provide email address of administrator account for wp-multisite-stack"
 wrp_admin_user="Please provide username of administrator account for wp-multisite-stack"
 wrp_admin_password="Please provide password of administrator account for wp-multisite-stack"
 wrp_plugin_MU="Please provide if WordPress MU Domain Mapping Plugin will be installed"
-
+wrp_subdomain="Specifies Multisite Subdomain installation mode in case of "Yes" or Subdirectory mode in case of No"
 
 #If install.sh runs with option --config , display the existing confg variables
 if [[ $1 == "--config" ]] || [[ $1 == "-c" ]]; then

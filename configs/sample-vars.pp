@@ -75,7 +75,7 @@ $wrp_mysqladm_pass =""
 $wrp_db_prefix = "wp_"
 
 #Specifies URL for Worpdress CLI
-$wrpcli = "https://raw.github.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
+$wrpcli = "/var/wpms-stack/files/wpcli"
 
 #Specifies the domain name of wp-multisite-stack.
 $wrp_url = "wp-multisite-stack.link7.co"
@@ -95,3 +95,5 @@ $wrp_admin_password = "admin"
 #Specifies if Multisite Plugin Manager will be installed.
 $wrp_plugin_MU = "Yes"
 
+#Specifies Multisite Subdomain installation mode in case of "Yes" or Subdirectory mode in case of No
+$wrp_subdomain = "Yes"

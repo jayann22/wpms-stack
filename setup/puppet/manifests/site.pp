@@ -41,6 +41,7 @@ install_wp{"wordpress":
 	wp_db_prefix => $wrp_db_prefix,
 	wp_mysql_port => $wrp_mysql_port,
 	wp_plugin_MU => $wrp_plugin_MU,
+	wp_subdomain => $wrp_subdomain,
 	wpcli => $wrpcli,	
         mode => 0400,
         require => Notify['note-start-WP']
