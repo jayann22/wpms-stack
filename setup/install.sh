@@ -59,7 +59,7 @@ wrp_admin_email="Please provide email address of administrator account for wp-mu
 wrp_admin_user="Please provide username of administrator account for wp-multisite-stack"
 wrp_admin_password="Please provide password of administrator account for wp-multisite-stack"
 wrp_plugin_MU="Please provide if WordPress MU Domain Mapping Plugin will be installed"
-wrp_subdomain="Specifies Multisite Subdomain installation mode in case of "Yes" or Subdirectory mode in case of No"
+wrp_subdomain="Please enter "Yes" if wordpress shall be installed with Subdomain mode or "No" for Subdirectory mode installation"
 
 #If install.sh runs with option --config , display the existing confg variables
 if [[ $1 == "--config" ]] || [[ $1 == "-c" ]]; then
@@ -207,11 +207,28 @@ fi
 			  echo -e -n "(The default Value is $defaultvalue): "
                           read newvalue
                         fi
-                      done
-                  fi
+		     done
+		   fi
 
-		#Check if user entered new value , change the appropriate line in config file, 
-		#else print message and leave as it is.
+		#Ensure that user entered valid data for wrp_subdomain variable
+        	if [[ $var == "wrp_subdomain" ]]
+	         then
+	          while :
+	           do
+	            if [[ $newvalue == "Yes" ]] || [[ $newvalue == "No" ]] || [[ -z $newvalue ]]
+	             then
+	              break
+	             else
+	               echo "Please answere Yes or No."
+	               echo -e -n "(The default Value is $defaultvalue): "
+	               read newvalue
+		    fi
+		   done
+	         fi
+	
+
+
+		#Check if user entered new value , change the appropriate line in config file #else print message and leave as it is.
                 if [[ -z $newvalue ]]
                  then
 		  echo -e "$i" >> $tmp_file
