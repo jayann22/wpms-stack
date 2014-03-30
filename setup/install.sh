@@ -340,5 +340,4 @@ if [[ $? -ne 0 ]]
  then
   echo -e "Puppet Installation failed\nexiting..."
   else
-  echo "WP-Multisite-Stack is installed Successful"
 fi
