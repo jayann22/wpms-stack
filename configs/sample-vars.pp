@@ -2,7 +2,7 @@
 $apache = "httpd"
 
 #Specifies package name for php installation, which is being provided to package manager such as yum.
-$phpv = "php53"
+$phpv = "php"
 
 #Specifies package name for mysql server installation, which is being provided to package manager such as yum.
 $mysqlpkg = "mysql-server"
