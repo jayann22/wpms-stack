@@ -30,7 +30,7 @@ $wp_apache_local_path="/var/www/wordpress"
 $apache_conf_file="/etc/httpd/conf/httpd.conf"
 
 #Specifies the directory into which wordpress should be installed.
-$wp_local_path = "/var/wpms-stack/www"
+$wp_local_path = "/var/wpms-stack/www/wordpress"
 
 #apache parameters
 $allowoverride="All"
