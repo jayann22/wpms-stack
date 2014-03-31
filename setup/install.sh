@@ -1,7 +1,7 @@
 #!/bin/bash
+#This script is intended for automatic wordpress multisite installation on Centos 6.5 x86_64 minimal installation machines 
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-alias echo="echo -e"
 source /etc/profile.d/wpms.sh
 nocol="\e\033[0m"
 red="\e\033[31m"
@@ -68,8 +68,7 @@ else
 
 fi
 
-echo $WPMS_ENVIRONMENT
-#This script is intended for automatic wordpress multisite installation on Centos 6.5 x86_64 minimal installation machines 
+#Setting correct configuration file for wordpress installation
 sample_file=../configs/sample-vars.pp
 tmp_file=/tmp/env-vars`date +%N`.pp
 file=../configs/env-vars.pp
