@@ -84,7 +84,7 @@ $wrp_url = "wp-multisite-stack.local.link7.co"
 $wrp_title = "WP Multisite"
 
 #Specifies email address of administrator account for wp-multisite-stack.
-$wrp_admin_email = "admin@localhost.co"
+$wrp_admin_email = "admin@localhost.dev"
 
 #Specifies username of administrator account for wp-multisite-stack.
 $wrp_admin_user = "admin"
