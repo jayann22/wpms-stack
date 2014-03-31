@@ -1,5 +1,11 @@
 #!/bin/bash
 
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+alias echo="echo -e"
+source /etc/profile.d/wpms.sh
+nocol="\e\033[0m"
+red="\e\033[31m"
+green="\e\033[032m"
 # Make sure only root can run our script
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 1>&2
@@ -10,60 +16,98 @@ fi
 
 if [[ $1 == -h ]] || [[  $1 == --help  ]] 
   then
-   echo -e "Listing available options that could be passed to install.sh.\n 
+   echo -e "$green Listing available options that could be passed to install.sh.\n
 -c, --config:    Print existing configuration varables with their values
--h, --help:	Print this Help"
+-h, --help:	Print this Help $nocol"
    exit 1
 fi
 
-#copies samle vars.pp file to env-vars.pp so it doesn't overwrite the sample.
-#cp ../configs/sample-vars.pp ../configs/env-vars.pp
 
+if [[ -z $WPMS_ENVIRONMENT ]] && [[ ! `grep "WPMS_ENVIRONMENT" /etc/profile.d/wpms.sh` ]]
+then
+   while :
+   do
+    echo -n -e "$green PLease provide name for your environment: $nocol"
+    read line
+
+     if [[ $line =~ ^[a-zA-Z0-9]+$ ]]
+       then
+	break
+       else
+	echo -e "$red The environment name must not be empty and must contain only letters and digits $nocol" 
+     fi
+
+   done
+
+echo "export WPMS_ENVIRONMENT=$line" >> /etc/profile.d/wpms.sh && source /etc/profile.d/wpms.sh
+
+else
+ echo -e "$green You have already set WPMS_ENVIRONMENT to $WPMS_ENVIRONMENT. $nocol" 
+ echo -e -n "$green Enter new name for your environment or press enter to leave as $WPMS_ENVIRONMENT: $nocol"
+   while :
+   do
+    read line
+       if [[ -z $line ]]
+        then 
+	  echo -e "$green The environment name didn't change... $nocol"
+	  break
+       fi
+
+     if [[ $line =~ ^[a-zA-Z0-9]+$ ]]
+      then
+	  sed -i 's/WPMS_ENVIRONMENT=.*/WPMS_ENVIRONMENT='$line'/'  /etc/profile.d/wpms.sh &&\
+	  source /etc/profile.d/wpms.sh
+          break
+	 else
+         echo -e "$red The environment name must not be empty and must contain only letters and digits $nocol"
+         echo -e -n "$green please enter new name or press enter to leave as $WPMS_ENVIRONMENT $nocol"
+     fi
+
+    done
+
+
+fi
+
+echo $WPMS_ENVIRONMENT
 #This script is intended for automatic wordpress multisite installation on Centos 6.5 x86_64 minimal installation machines 
 sample_file=../configs/sample-vars.pp
 tmp_file=/tmp/env-vars`date +%N`.pp
 file=../configs/env-vars.pp
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 i=0
-separator="------------------------------------------------------"
-
 
 #The comments for each variable. If script determines variable with comment, it will ask user on command line.
+current_mysqlroot_pass="$green Please provide root password of mysql $nocol"
+wrp_metod="$green Please provide method by which worpdress must be installed.The method can be GIT or WEB $nocol"
+wp_get_address="$green Please provide URL from which the wordpress can be downloaded $nocol"
+wp_local_path="$green Please provide the full path of directory into which wordpress should be installed $nocol"
+wp_apache_local_path="$green Please provide the full path of public apache directory, which should be linked to wordpress install directory $nocol"
+wrp_owner="$green Please provide owner of wordpress install directory $nocol"
+wrp_group="$green Please provide group of wordpress install directory $nocol"
+mysqlconfigure="$green Please answer Yes if the script shall create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database $nocol"
+mysqldinstall="$green Please answer Yes if the script shall install mysql-server $nocol"
+wrp_dbname="$green Please provide database name for wordpress $nocol"
+wrp_dbuser="$green Please provide database user for wordpress $nocol"
+wrp_dbpass="$green Please provide password for wordpress database user $nocol"
+wrp_dbhost_access="$green Please provide the host from which will the user have access to database $nocol"
+wrp_dbhost="$green Please provide the hostname or ip address of mysql to which worpdress shall connect $nocol"
+wrp_mysql_port="$green Please provide the mysql port to which worpdress shall connect $nocol"
+wrp_mysqladm_user="$green Please provide the username which has privileges to grant accesses and create wp database on mysql server, e.g. root $nocol"
+wrp_mysqladm_pass="$green Please provide the password for mysql admin user $nocol"
+wrp_db_prefix="$green Please provide the database prefix, with which will be created tables $nocol"
+#wrpcli="$green Please provide URL for Worpdress CLI $nocol"
+wrp_url="$green Please provide the domain name of wp-multisite-stack $nocol"
+wrp_title="$green Please provide title of wp-multisite-stack $nocol"
+wrp_admin_email="$green Please provide email address of administrator account for wp-multisite-stack $nocol"
+wrp_admin_user="$green Please provide username of administrator account for wp-multisite-stack $nocol"
+wrp_admin_password="$green Please provide password of administrator account for wp-multisite-stack $nocol"
+wrp_plugin_MU="$green Please provide if WordPress MU Domain Mapping Plugin will be installed $nocol"
+wrp_subdomain="$green Please enter "Yes" if wordpress shall be installed with Subdomain mode or "No" for Subdirectory mode installation $nocol"
+separator=""$green"################################################################## $nocol"
 
-#apache="Apache Comment"
-#phpv="php Comment"
-#mysqlpkg="mysqlpkg Comment"
-#mysqld="mysqld Comment"
-current_mysqlroot_pass="Please provide root password of mysql"
-wrp_metod="Please provide method by which worpdress must be installed.The method can be GIT or WEB"
-wp_get_address="Please provide URL from which the wordpress can be downloaded"
-wp_local_path="Please provide the full path of directory into which wordpress should be installed"
-wp_apache_local_path="Please provide the full path of public apache directory, which should be linked to wordpress install directory"
-wrp_owner="Please provide owner of wordpress install directory"
-wrp_group="Please provide group of wordpress install directory"
-mysqlconfigure="Please answer Yes if the script shall create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database"
-mysqldinstall="Please answer Yes if the script shall install mysql-server"
-wrp_dbname="Please provide database name for wordpress"
-wrp_dbuser="Please provide database user for wordpress"
-wrp_dbpass="Please provide password for wordpress database user"
-wrp_dbhost_access="Please provide the host from which will the user have access to database"
-wrp_dbhost="Please provide the hostname or ip address of mysql to which worpdress shall connect"
-wrp_mysql_port="Please provide the mysql port to which worpdress shall connect"
-wrp_mysqladm_user="Please provide the username which has privileges to grant accesses and create wp database on mysql server, e.g. root"
-wrp_mysqladm_pass="Please provide the password for mysql admin user"
-wrp_db_prefix="Please provide the database prefix, with which will be created tables"
-#wrpcli="Please provide URL for Worpdress CLI"
-wrp_url="Please provide the domain name of wp-multisite-stack"
-wrp_title="Please provide title of wp-multisite-stack"
-wrp_admin_email="Please provide email address of administrator account for wp-multisite-stack"
-wrp_admin_user="Please provide username of administrator account for wp-multisite-stack"
-wrp_admin_password="Please provide password of administrator account for wp-multisite-stack"
-wrp_plugin_MU="Please provide if WordPress MU Domain Mapping Plugin will be installed"
-wrp_subdomain="Please enter "Yes" if wordpress shall be installed with Subdomain mode or "No" for Subdirectory mode installation"
 
 #If install.sh runs with option --config , display the existing confg variables
 if [[ $1 == "--config" ]] || [[ $1 == "-c" ]]; then
-   echo -e "Please find below existing configuration variables and their values.\n" 
+   echo -e "$green Please find below existing configuration variables and their values. $nocol\n" 
      j=0
      while read line
        do
