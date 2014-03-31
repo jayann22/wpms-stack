@@ -43,7 +43,7 @@ echo "export WPMS_ENVIRONMENT=$line" >> /etc/profile.d/wpms.sh && source /etc/pr
 
 else
  echo -e "$green You have already set WPMS_ENVIRONMENT to $WPMS_ENVIRONMENT. $nocol" 
- echo -e -n "$green Enter new name for your environment or press enter to leave as $WPMS_ENVIRONMENT: $nocol"
+ echo -e -n "$green Enter new name for your environment or press enter to leave as"$nocol" $WPMS_ENVIRONMENT:"
    while :
    do
     read line
@@ -293,7 +293,7 @@ fi
 
 while :
 do
-	echo -e -n "`cat $tmp_file`\n\nPlease confirm settings that you have entered: Y/N:"
+	echo -e -n "`cat $tmp_file`\n\n"$green"Please confirm settings that you have entered":$nocol" Y/N:"
 
   read line
 
@@ -306,7 +306,7 @@ do
 
 	  if [[ `echo $line | tr '[:upper:]' '[:lower:]'` == n ]] 
                 then 
-               echo -e "You didn't generate configuration file...\nPlease run install.sh to generate configuration file\nexiting..."
+               echo -e ""$red"You didn't generate configuration file...\nPlease run install.sh to generate configuration file\nexiting..."$nocol""
 	       rm $tmp_file
 	       exit 1
 	  fi
