@@ -78,13 +78,13 @@ $wrp_db_prefix = "wp_"
 $wrpcli = "/var/wpms-stack/files/wpcli"
 
 #Specifies the domain name of wp-multisite-stack.
-$wrp_url = "wp-multisite-stack.link7.co"
+$wrp_url = "wp-multisite-stack.local.link7.co"
 
 #Specifies title of wp-multisite-stack
 $wrp_title = "WP Multisite"
 
 #Specifies email address of administrator account for wp-multisite-stack.
-$wrp_admin_email = "admin@localhost"
+$wrp_admin_email = "admin@localhost.co"
 
 #Specifies username of administrator account for wp-multisite-stack.
 $wrp_admin_user = "admin"
