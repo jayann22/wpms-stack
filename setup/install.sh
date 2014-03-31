@@ -2,7 +2,12 @@
 #This script is intended for automatic wordpress multisite installation on Centos 6.5 x86_64 minimal installation machines 
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+if [[ -f /etc/profile.d/wpms.sh ]]
+then
 source /etc/profile.d/wpms.sh
+fi
+
 nocol="\e\033[0m"
 red="\e\033[31m"
 green="\e\033[032m"
