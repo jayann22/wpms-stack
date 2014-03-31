@@ -13,7 +13,7 @@ Following are intructions.
 	
 3) After the new vm launched, you can easily login by running command "vagrant ssh" and install wp-multisite-stack by running following commands.
   3.1) [vagrant]# cd /var/wpms-stack/setup && sudo ./install.sh
-  3.2) [vagrant]# sudo puppet apply puppet/site.pp
+  3.2) [vagrant]# sudo puppet apply puppet/manifests/site.pp
 
 4) You can find your wpms-stack installation by pointing browser to one of the following urls.
   4.1) wp-multisite-stack.local.link7.co 
