@@ -12,24 +12,38 @@ define install_wp($wp_remote_location, $mode = 0644, $wp_localpath, $metod = 'GI
   file{"${tmppath}":
     ensure => absent,
     mode => $mode,
-    require => Exec["get_web_${tmppath}"],
+    require => File["${wp_apache_localpath}"],
   }
-
+  
+    file { "${wp_apache_localpath}":
+	ensure => 'linke',
+      target => "${wp_localpath}",
+      require => Exec["wp-cli-install"],
+      }
+      
+      exec{"wp-cli-install":
+        command => "/bin/cp $wpcli /tmp/ \
+		&& if [ $wp_subdomain == \"Yes\" ]; then /usr/bin/php /tmp/wpcli core multisite-install --subdomains --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; \
+		else /usr/bin/php /tmp/wpcli core multisite-install --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; fi \
+		&& if [ $wp_plugin_MU == \"Yes\" ]; then /usr/bin/php /tmp/wpcli plugin install \"WordPress MU Domain Mapping\" --path=$wp_localpath; \
+		/bin/mv $wp_localpath/wp-content/plugins/wordpress-mu-domain-mapping/sunrise.php $wp_localpath/wp-content/; \
+		/bin/sed -i \"/define('ABSPATH', dirname(__FILE__) . '\\/');/a define( 'SUNRISE', 'on' );\" $wp_localpath/wp-config.php; fi \
+		&& /bin/chown -R $web_owner.$web_group $wp_localpath \
+		&& rm -fr /tmp/wpcli",
+	path => "/bin:/usr/bin",
+	require => Exec["get_web_${tmppath}"],
+      }
+      
   exec{"get_web_${$tmppath}":
   
 	    command => "$command \
-			&& /bin/ln -T -s $wp_localpath $wp_apache_localpath \
-			&& /bin/tar -zxf $tmppath -C $wp_localpath --strip-components 1 \
-			&& /bin/rm -f $tmppath \
 			&& /bin/cp $wpcli /tmp/ \
+			&& /bin/tar -zxf $tmppath -C $wp_localpath --strip-components 1 \
 			&& /usr/bin/php /tmp/wpcli core config --path=$wp_localpath --dbname=$wp_dbname --dbuser=$wp_dbuser --dbpass=$wp_dbpass --dbhost=$wp_dbhost:$wp_mysql_port --dbprefix=$wp_db_prefix \
-			&& if [ $wp_subdomain == \"Yes\" ]; then /usr/bin/php /tmp/wpcli core multisite-install --subdomains --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; \
-			else /usr/bin/php /tmp/wpcli core multisite-install --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; fi\
-			&& if [ $wp_plugin_MU == \"Yes\" ]; then /usr/bin/php /tmp/wpcli plugin install \"WordPress MU Domain Mapping\" --path=$wp_localpath; \
-			/bin/mv $wp_localpath/wp-content/plugins/wordpress-mu-domain-mapping/sunrise.php $wp_localpath/wp-content/; \
-			/bin/sed -i \"/define('ABSPATH', dirname(__FILE__) . '\\/');/a define( 'SUNRISE', 'on' );\" $wp_localpath/wp-config.php; fi \
-			&& /bin/chown -R $web_owner.$web_group $wp_localpath \
-			&& rm -fr /tmp/wpcli",
+			&& if [ $wp_subdomain == \"Yes\" ]; then /bin/cp /var/wpms-stack/setup/puppet/modules/apache/templates/htaccesSubdomain.erb $wp_localpath/.htaccess; \
+			else /bin/cp /var/wpms-stack/setup/puppet/modules/apache/templates/htaccesSubfolder.erb $wp_localpath/.htaccess; fi \
+			&& rm -fr /tmp/wpcli \
+			&& /bin/rm -f $tmppath",
 	    require => Notify[ note-wp-download ],
 #	    subscribe => File["$tmppath"],
 	    timeout => '600',
@@ -55,21 +69,35 @@ define install_wp($wp_remote_location, $mode = 0644, $wp_localpath, $metod = 'GI
     file{"${wp_localpath}":
 	    ensure => "directory",
 	    require => Class["extra"],
-#	    require => Exec["get_git_${wp_localpath}"],
+#	    require => File["${wp_apache_localpath}"],
 	}
+
+    file { "${wp_apache_localpath}":
+	ensure => 'linke',
+      target => "${wp_localpath}",
+      require => Exec["wp-cli-install"],
+      }
+      
+      exec{"wp-cli-install":
+        command => "/bin/cp $wpcli /tmp/ \
+		&& if [ $wp_subdomain == \"Yes\" ]; then /usr/bin/php /tmp/wpcli core multisite-install --subdomains --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; \
+		else /usr/bin/php /tmp/wpcli core multisite-install --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; fi \
+		&& if [ $wp_plugin_MU == \"Yes\" ]; then /usr/bin/php /tmp/wpcli plugin install \"WordPress MU Domain Mapping\" --path=$wp_localpath; \
+		/bin/mv $wp_localpath/wp-content/plugins/wordpress-mu-domain-mapping/sunrise.php $wp_localpath/wp-content/; \
+		/bin/sed -i \"/define('ABSPATH', dirname(__FILE__) . '\\/');/a define( 'SUNRISE', 'on' );\" $wp_localpath/wp-config.php; fi \
+		&& /bin/chown -R $web_owner.$web_group $wp_localpath \
+		&& rm -fr /tmp/wpcli",
+	path => "/bin:/usr/bin",
+	require => Exec["get_git_${wp_localpath}"],
+      }
 
   exec{"get_git_${wp_localpath}":
 	    command => "$command \
-			&& /bin/ln -T -s $wp_localpath $wp_apache_localpath \
 			&& /bin/cp $wpcli /tmp/ \
 			&& /usr/bin/php /tmp/wpcli core config --path=$wp_localpath --dbname=$wp_dbname --dbuser=$wp_dbuser --dbpass=$wp_dbpass --dbhost=$wp_dbhost:$wp_mysql_port --dbprefix=$wp_db_prefix \
-			&& if [ $wp_subdomain == \"Yes\" ]; then /usr/bin/php /tmp/wpcli core multisite-install --subdomains --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; \
-			else /usr/bin/php /tmp/wpcli core multisite-install --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; fi\
-			&& if [ $wp_plugin_MU == \"Yes\" ]; then /usr/bin/php /tmp/wpcli plugin install \"WordPress MU Domain Mapping\" --path=$wp_localpath; \
-			/bin/mv $wp_localpath/wp-content/plugins/wordpress-mu-domain-mapping/sunrise.php $wp_localpath/wp-content/; \
-			/bin/sed -i \"/define('ABSPATH', dirname(__FILE__) . '\\/');/a define( 'SUNRISE', 'on' );\" $wp_localpath/wp-config.php; fi \
+			&& if [ $wp_subdomain == \"Yes\" ]; then /bin/cp /var/wpms-stack/setup/puppet/modules/apache/templates/htaccesSubdomain.erb $wp_localpath/.htaccess; \
+			else /bin/cp /var/wpms-stack/setup/puppet/modules/apache/templates/htaccesSubfolder.erb $wp_localpath/.htaccess; fi \
 			&& rm -fr $wp_localpath/.git \
-			&& /bin/chown -R $web_owner.$web_group $wp_localpath \
 			&& rm -fr /tmp/wpcli",
 #			require => Class["extra"],
 			require => Notify[ note-wp-download-git ],
