@@ -106,7 +106,7 @@ installeverything () {
 
 
 
-if [[ -z $WPMS_ENVIRONMENT ]] && [[ ! `grep "WPMS_ENVIRONMENT" /etc/profile.d/wpms.sh` ]]
+if [[ -z $WPMS_ENVIRONMENT ]] || [[ ! `cat /etc/profile.d/wpms.sh | grep "$WPMS_ENVIRONMENT"` ]]
 then
    while :
    do
