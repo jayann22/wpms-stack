@@ -26,7 +26,7 @@ class apache {
         group   => 'root',
         mode    => '0644',
         content => template('/var/wpms-stack/setup/puppet/modules/apache/templates/httpd.erb'),
-	require => Install_wp['wordpress'],
+	require => Wordpress::Install-wp['wordpress'],
     }
 
     service { $apache:

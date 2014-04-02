@@ -1,4 +1,4 @@
-define install_wp_mysql( $wp_dbname, $wp_dbuser, $wp_dbpass, $wp_dbhost_access, $mysqlconf, $mysqlinstall, 
+define mysql::install-wp-mysql( $wp_dbname, $wp_dbuser, $wp_dbpass, $wp_dbhost_access, $mysqlconf, $mysqlinstall, 
 			    $wp_dbhost, $wp_mysqladm_user, $wp_mysqladm_pass, $wp_mysql_port){
   
     if $mysqlconf == 'Yes' { 

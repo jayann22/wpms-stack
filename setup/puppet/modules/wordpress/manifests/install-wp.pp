@@ -1,4 +1,4 @@
-define install_wp($wp_remote_location, $mode = 0644, $wp_localpath, $metod = 'GIT', $wpcli, $wp_db_prefix, $wp_subdomain,
+define wordpress::install-wp($wp_remote_location, $mode = 0644, $wp_localpath, $metod = 'GIT', $wpcli, $wp_db_prefix, $wp_subdomain,
 		    $wp_admin_email, $web_owner, $web_group, $wp_dbhost, $wp_dbname, $wp_dbuser, $wp_dbpass, $apache_conf, 
 		    $wp_admin_user, $wp_admin_password, $wp_title, $wp_url, $wp_mysql_port, $wp_plugin_MU, $wp_apache_localpath ){
 #    include apache

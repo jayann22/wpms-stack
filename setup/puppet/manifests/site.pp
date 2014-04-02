@@ -1,13 +1,15 @@
 node 'default' {
  case $operatingsystem {
       centos, redhat: { 
-      import 'classes/*.pp'
-      import '../../../configs/env-vars.pp'
+#      import 'classes/*.pp'
+      import '../modules/conf/init.pp'
+
 
 include messages
 include apache
 
-install_wp_mysql{"mysqldb":
+
+mysql::install-wp-mysql{"mysqldb":
         wp_dbname => $wrp_dbname,
         wp_dbhost => $wrp_dbhost,
         wp_dbuser => $wrp_dbuser,
@@ -21,7 +23,7 @@ install_wp_mysql{"mysqldb":
 	require => Notify['note-db-run']
           }
 
-install_wp{"wordpress":
+wordpress::install-wp{"wordpress":
         wp_remote_location => $wp_get_address,
         wp_localpath => $wp_local_path,
         wp_apache_localpath => $wp_apache_local_path,
@@ -55,7 +57,7 @@ notify { 'note-db-run':
             message => 'START DB CONFIGURATION',
             }
 
-Notify[note-install-finish-apache]->Install_wp_mysql['mysqldb']-> Notify[note-running-mysql]->Notify['note-db-end']->Install_wp['wordpress']-> Notify['note-wp-end']-> Exec['end-msg']
+Notify[note-install-finish-apache]->Mysql::Install-wp-mysql['mysqldb']-> Notify[note-running-mysql]->Notify['note-db-end']->Wordpress::Install-wp['wordpress']-> Notify['note-wp-end']-> Exec['end-msg']
       }
       debian, ubuntu: { $apache = "apache2" }
       default: {err("Unrecognized operating system") 

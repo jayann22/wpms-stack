@@ -11,6 +11,7 @@ fi
 nocol="\e\033[0m"
 red="\e\033[31m"
 green="\e\033[032m"
+cyan="\e[36m"
 # Make sure only root can run our script
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 1>&2
@@ -26,6 +27,83 @@ if [[ $1 == -h ]] || [[  $1 == --help  ]]
 -h, --help:	Print this Help $nocol"
    exit 1
 fi
+
+
+#All stack and needed software instalation function
+installeverything () {
+
+
+	#Set symink which points to $WPMS-Environment-vars.pp . This link is included in file setup/puppet/modules/conf/init.pp as puppet configuration settings.
+	ln -fs ../../../../configs/"$WPMS_ENVIRONMENT"-vars.pp  ./puppet/modules/conf/init.pp
+
+
+	#Install wget
+	echo -e "Installing wget...\n"
+
+	if [[ ! `rpm -qa | grep wget` ]]
+	then
+	yum install -y wget
+	else
+	echo "Wget is already installed"
+	fi
+
+	if [[ $? -ne 0 ]]
+	 then
+	  echo "Wget Installation failed\nexiting..."
+	  exit 1
+	fi
+
+	#Install epel repository for Centos 6.5, this is needed for puppet installation
+
+	echo -e "Downloading EPEL repository packages...\n"
+	wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm -O /tmp/epel-release-6-8.noarch.rpm &&\
+	wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm -O /tmp/remi-release-6.rpm
+
+	if [[ $? -ne 0 ]]
+	 then
+	  echo -e "Getting Epel repository packages failed\nexiting..."
+	  exit 1
+	fi
+
+	#Install EPEL repos and exit script if failed
+
+	echo -e "Installing EPEL repository packages...\n"
+	if [[ `rpm -Uv /tmp/epel-release-6*.rpm` ]] && [[ `rpm -Uvh /tmp/remi-release-6*.rpm` ]]
+	 then 
+	  rm -rf /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
+	 else
+	  rm -rf /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
+	  echo -e "Installation of EPEL repository packages failed\nexiting..."
+	  exit 1
+	fi
+
+	#Install puppet if it is not installed, exit if installation failed
+	echo -e "Installing puppet...\n"
+	
+	if [[ ! `rpm -qa | grep puppet` ]]
+	then
+	 yum install -y puppet
+	else
+	 echo "puppet is already installed"
+	fi
+
+	if [[ $? -ne 0 ]]
+	 then
+	  echo -e "Puppet Installation failed\nexiting..."
+	  exit 1
+	fi
+
+	#Start wp-multisite installation, with puppet apply, check if failed,exit with message
+	echo -e "Installing WP-Multisite-Stack...\n"
+
+	 puppet apply  --modulepath=./puppet/modules ./puppet/manifests/site.pp
+
+	if [[ $? -ne 0 ]]
+	 then
+	  echo -e "Puppet Installation failed\nexiting..."
+	fi
+}
+
 
 
 if [[ -z $WPMS_ENVIRONMENT ]] && [[ ! `grep "WPMS_ENVIRONMENT" /etc/profile.d/wpms.sh` ]]
@@ -54,7 +132,7 @@ else
     read line
        if [[ -z $line ]]
         then 
-	  echo -e "$green The environment name didn't change... $nocol"
+	  echo -e "$green The environment name didn't change... $nocol\n"
 	  break
        fi
 
@@ -73,11 +151,53 @@ else
 
 fi
 
+
 #Setting correct configuration file for wordpress installation
 sample_file=../configs/sample-vars.pp
 tmp_file=/tmp/env-vars`date +%N`.pp
-file=../configs/env-vars.pp
+file=../configs/"$WPMS_ENVIRONMENT"-vars.pp
 i=0
+
+#If configuration file already exists
+if [[ -e ../configs/"$WPMS_ENVIRONMENT"-vars.pp ]]
+ then
+echo -e ""$cyan"You already have configuration file for environment named "$WPMS_ENVIRONMENT"\n"
+while :
+do
+echo -e -n ""$green"What will you choose?
+
+1)Do not change anything
+2)Proceed to new config file generation using as defaults the values from sample config file
+3)Proceed to new config file generation using as defaults the values from existing config file"$nocol": 1/2/3:"
+
+read line
+
+   case "$line" in
+	 1)
+ 	  echo -e ""$cyan"You chose 1: Installing wp-multisite-stack using options in existing "$WPMS_ENVIRONMENT"-vars.pp"$nocol"\n"
+	  installeverything
+          exit 1
+	  ;;
+
+	 2)
+	  echo -e ""$cyan"You chose 2: Setting values in "$sample_file" as default and proceeding to new file generation..."$nocol"\n"
+	  file="$WPMS_ENVIRONMENT"-vars.pp
+	  break
+	  ;;
+
+	 3)
+	  sample_file=../configs/"$WPMS_ENVIRONMENT"-vars.pp
+	  echo -e ""$cyan"You chose 3: Setting values in "$sample_file" as default and proceeding to new file generation..."$nocol"\n"
+	  break
+	  ;;
+	 *)
+	 echo -e ""$red"\nPlease select value only from provided options"$nocol"\n"
+   esac
+
+done
+
+fi
+
 
 #The comments for each variable. If script determines variable with comment, it will ask user on command line.
 current_mysqlroot_pass="$green Please provide root password of mysql $nocol"
@@ -319,72 +439,7 @@ do
 done
 
 
-
-
 #After Config file successful configuration we can continue to puppet installation
 
-#Install wget
-echo -e "Installing wget...\n"
+installeverything
 
-if [[ ! `rpm -qa | grep wget` ]]
-then
-yum install -y wget
-else
-echo "Wget is already installed"
-fi
-
-if [[ $? -ne 0 ]]
- then
-  echo "Wget Installation failed\nexiting..."
-  exit 1
-fi
-
-#Install epel repository for Centos 6.5, this is needed for puppet installation
-
-echo -e "Downloading EPEL repository packages...\n"
-wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm -O /tmp/epel-release-6-8.noarch.rpm &&\
-wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm -O /tmp/remi-release-6.rpm
-
-if [[ $? -ne 0 ]]
- then
-  echo -e "Getting Epel repository packages failed\nexiting..."
-  exit 1
-fi
-
-#Install EPEL repos and exit script if failed
-
-echo -e "Installing EPEL repository packages...\n"
-if [[ `rpm -Uv /tmp/epel-release-6*.rpm` ]] && [[ `rpm -Uvh /tmp/remi-release-6*.rpm` ]]
- then 
-  rm -rf /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
- else
-  rm -rf /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
-  echo -e "Installation of EPEL repository packages failed\nexiting..."
-  exit 1
-fi
-
-#Install puppet if it is not installed, exit if installation failed
-echo -e "Installing puppet...\n"
-
-if [[ ! `rpm -qa | grep puppet` ]]
-then
- yum install -y puppet
-else
- echo "puppet is already installed"
-fi
-
-if [[ $? -ne 0 ]]
- then
-  echo -e "Puppet Installation failed\nexiting..."
-  exit 1
-fi
-
-#Start wp-multisite installation, with puppet apply, check if failed,exit with message
-echo -e "Installing WP-Multisite-Stack...\n"
-
- puppet apply puppet/manifests/site.pp
-
-if [[ $? -ne 0 ]]
- then
-  echo -e "Puppet Installation failed\nexiting..."
-fi
