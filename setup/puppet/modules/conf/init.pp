@@ -1,1 +1,1 @@
-../../../../configs/demo-vars.pp
+/var/wpms-stack/configs/sample-vars.pp

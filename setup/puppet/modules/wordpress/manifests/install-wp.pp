@@ -1,4 +1,4 @@
-define wordpress::install-wp($wp_remote_location, $mode = 0644, $wp_localpath, $metod = 'GIT', $wpcli, $wp_db_prefix, $wp_subdomain,
+define wordpress::install-wp($wp_remote_location, $mode = 0644, $wp_localpath, $metod = 'GIT', $module_path, $wp_db_prefix, $wp_subdomain,
 		    $wp_admin_email, $web_owner, $web_group, $wp_dbhost, $wp_dbname, $wp_dbuser, $wp_dbpass, $apache_conf, 
 		    $wp_admin_user, $wp_admin_password, $wp_title, $wp_url, $wp_mysql_port, $wp_plugin_MU, $wp_apache_localpath ){
 #    include apache
@@ -22,7 +22,7 @@ define wordpress::install-wp($wp_remote_location, $mode = 0644, $wp_localpath, $
       }
       
       exec{"wp-cli-install":
-        command => "/bin/cp $wpcli /tmp/ \
+        command => "/bin/cp $module_path/wordpress/files/wpcli /tmp/ \
 		&& if [ $wp_subdomain == \"Yes\" ]; then /usr/bin/php /tmp/wpcli core multisite-install --subdomains --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; \
 		else /usr/bin/php /tmp/wpcli core multisite-install --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; fi \
 		&& if [ $wp_plugin_MU == \"Yes\" ]; then /usr/bin/php /tmp/wpcli plugin install \"WordPress MU Domain Mapping\" --path=$wp_localpath; \
@@ -37,11 +37,11 @@ define wordpress::install-wp($wp_remote_location, $mode = 0644, $wp_localpath, $
   exec{"get_web_${$tmppath}":
   
 	    command => "$command \
-			&& /bin/cp $wpcli /tmp/ \
+			&& /bin/cp $module_path/wordpress/files/wpcli /tmp/ \
 			&& /bin/tar -zxf $tmppath -C $wp_localpath --strip-components 1 \
 			&& /usr/bin/php /tmp/wpcli core config --path=$wp_localpath --dbname=$wp_dbname --dbuser=$wp_dbuser --dbpass=$wp_dbpass --dbhost=$wp_dbhost:$wp_mysql_port --dbprefix=$wp_db_prefix \
-			&& if [ $wp_subdomain == \"Yes\" ]; then /bin/cp /var/wpms-stack/setup/puppet/modules/apache/templates/htaccesSubdomain.erb $wp_localpath/.htaccess; \
-			else /bin/cp /var/wpms-stack/setup/puppet/modules/apache/templates/htaccesSubfolder.erb $wp_localpath/.htaccess; fi \
+			&& if [ $wp_subdomain == \"Yes\" ]; then /bin/cp $module_path/wordpress/templates/htaccesSubdomain.erb $wp_localpath/.htaccess; \
+			else /bin/cp $module_path/wordpress/templates/htaccesSubfolder.erb $wp_localpath/.htaccess; fi \
 			&& rm -fr /tmp/wpcli \
 			&& /bin/rm -f $tmppath",
 	    require => Notify[ note-wp-download ],
@@ -79,7 +79,7 @@ define wordpress::install-wp($wp_remote_location, $mode = 0644, $wp_localpath, $
       }
       
       exec{"wp-cli-install":
-        command => "/bin/cp $wpcli /tmp/ \
+        command => "/bin/cp $module_path/wordpress/files/wpcli /tmp/ \
 		&& if [ $wp_subdomain == \"Yes\" ]; then /usr/bin/php /tmp/wpcli core multisite-install --subdomains --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; \
 		else /usr/bin/php /tmp/wpcli core multisite-install --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; fi \
 		&& if [ $wp_plugin_MU == \"Yes\" ]; then /usr/bin/php /tmp/wpcli plugin install \"WordPress MU Domain Mapping\" --path=$wp_localpath; \
@@ -93,10 +93,10 @@ define wordpress::install-wp($wp_remote_location, $mode = 0644, $wp_localpath, $
 
   exec{"get_git_${wp_localpath}":
 	    command => "$command \
-			&& /bin/cp $wpcli /tmp/ \
+			&& /bin/cp $module_path/wordpress/files/wpcli /tmp/ \
 			&& /usr/bin/php /tmp/wpcli core config --path=$wp_localpath --dbname=$wp_dbname --dbuser=$wp_dbuser --dbpass=$wp_dbpass --dbhost=$wp_dbhost:$wp_mysql_port --dbprefix=$wp_db_prefix \
-			&& if [ $wp_subdomain == \"Yes\" ]; then /bin/cp /var/wpms-stack/setup/puppet/modules/apache/templates/htaccesSubdomain.erb $wp_localpath/.htaccess; \
-			else /bin/cp /var/wpms-stack/setup/puppet/modules/apache/templates/htaccesSubfolder.erb $wp_localpath/.htaccess; fi \
+			&& if [ $wp_subdomain == \"Yes\" ]; then /bin/cp $module_path/wordpress/templates/htaccesSubdomain.erb $wp_localpath/.htaccess; \
+			else /bin/cp $module_path/wordpress/templates/htaccesSubfolder.erb $wp_localpath/.htaccess; fi \
 			&& rm -fr $wp_localpath/.git \
 			&& rm -fr /tmp/wpcli",
 #			require => Class["extra"],

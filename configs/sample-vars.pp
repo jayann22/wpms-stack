@@ -74,9 +74,6 @@ $wrp_mysqladm_pass =""
 #Specifies the database prefix, with which will be created tables
 $wrp_db_prefix = "wp_"
 
-#Specifies URL for Worpdress CLI
-$wrpcli = "/var/wpms-stack/files/wpcli"
-
 #Specifies the domain name of wp-multisite-stack.
 $wrp_url = "wp-multisite-stack.local.link7.co"
 
