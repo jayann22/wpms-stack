@@ -34,7 +34,7 @@ installeverything () {
 
 
 	#Set symink which points to $WPMS-Environment-vars.pp . This link is included in file setup/puppet/modules/conf/init.pp as puppet configuration settings.
-	ln -fs ../../../../configs/"$WPMS_ENVIRONMENT"-vars.pp  /tmp/envinit.pp
+	ln -fs `pwd`/../configs/"$WPMS_ENVIRONMENT"-vars.pp  /tmp/envinit.pp
 
 
 	#Install wget
