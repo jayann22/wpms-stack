@@ -1,1 +1,0 @@
-/var/wpms-stack/configs/sample-vars.pp

@@ -2,7 +2,7 @@ node 'default' {
  case $operatingsystem {
       centos, redhat: { 
 #      import 'classes/*.pp'
-      import '../modules/conf/init.pp'
+      import '/tmp/envinit.pp'
 
 
 include messages
