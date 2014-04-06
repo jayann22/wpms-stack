@@ -1,6 +1,6 @@
 class apache {
 
-    $apkg = [ $apache, $phpv, "mod_ssl", "$phpv-mysql" ]
+    $apkg = [ $apache, $phpv, "mod_ssl", "$phpv-mysql", "$phpv-mbstring" ]
 
 
 
