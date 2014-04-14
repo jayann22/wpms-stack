@@ -28,6 +28,7 @@ wordpress::install-wp{"wordpress":
         wp_localpath => $wp_local_path,
         wp_apache_localpath => $wp_apache_local_path,
         metod => $wrp_metod,
+        wp_env => $wrp_env,
 	web_owner => $wrp_owner,
 	web_group => $wrp_group,
 	wp_dbhost => $wrp_dbhost,
@@ -45,6 +46,7 @@ wordpress::install-wp{"wordpress":
 	wp_plugin_MU => $wrp_plugin_MU,
 	wp_subdomain => $wrp_subdomain,
 	module_path => "./puppet/modules",
+	wp_config_path => $wrp_config_path,
         mode => 0400,
         require => Notify['note-start-WP']
           }

@@ -1,5 +1,6 @@
 #!/bin/bash
-#This script is intended for automatic wordpress multisite installation on Centos 6.5 x86_64 minimal installation machines 
+#This script is intended for automatic wordpress multisite installation 
+#on Centos 6.5 x86_64 minimal installation machines 
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -38,74 +39,75 @@ installeverything () {
 
 
 	#Install wget
-	echo -e "Installing wget...\n"
+	echo -e ""$cyan"Installing wget...\n"$nocol""
 
 	if [[ ! `rpm -qa | grep wget` ]]
 	then
 	yum install -y wget
 	else
-	echo "Wget is already installed"
+	echo -e ""$cyan"Wget is already installed"$nocol""
 	fi
 
 	if [[ $? -ne 0 ]]
 	 then
-	  echo "Wget Installation failed\nexiting..."
+	  echo -e ""$red"Wget Installation failed\nexiting..."$nocol""
 	  exit 1
 	fi
 
 	#Install epel repository for Centos 6.5, this is needed for puppet installation
 
-	echo -e "Downloading EPEL repository packages...\n"
+	echo -e ""$cyan"Downloading EPEL repository packages...\n"$nocol""
 	wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm -O /tmp/epel-release-6-8.noarch.rpm &&\
 	wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm -O /tmp/remi-release-6.rpm
 
 	if [[ $? -ne 0 ]]
 	 then
-	  echo -e "Getting Epel repository packages failed\nexiting..."
+	  echo -e ""$red"Getting Epel repository packages failed\nexiting..."$nocol""
 	  exit 1
 	fi
 
 	#Install EPEL repos and exit script if failed
 
-	echo -e "Installing EPEL repository packages...\n"
+	echo -e ""$cyan"Installing EPEL repository packages...\n"$nocol""
 	if [[ `rpm -Uv /tmp/epel-release-6*.rpm` ]] && [[ `rpm -Uvh /tmp/remi-release-6*.rpm` ]]
 	 then 
 	  rm -rf /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
 	 else
 	  rm -rf /tmp/remi-release-6*.rpm /tmp/epel-release-6*.rpm
-	  echo -e "Installation of EPEL repository packages failed\nexiting..."
+	  echo -e ""$red"Installation of EPEL repository packages failed\nexiting..."$nocol""
 	  exit 1
 	fi
 
 	#Install puppet if it is not installed, exit if installation failed
-	echo -e "Installing puppet...\n"
+	echo -e ""$cyan"Installing puppet...\n"$nocol""
 	
 	if [[ ! `rpm -qa | grep puppet` ]]
 	then
 	 yum install -y puppet
 	else
-	 echo "puppet is already installed"
+	 echo -e ""$cyan"Puppet is already installed"$nocol""
 	fi
 
 	if [[ $? -ne 0 ]]
 	 then
-	  echo -e "Puppet Installation failed\nexiting..."
+	  echo -e ""$red"Puppet Installation failed\nexiting..."$nocol""
 	  exit 1
 	fi
 
 	#Start wp-multisite installation, with puppet apply, check if failed,exit with message
-	echo -e "Installing WP-Multisite-Stack...\n"
+	echo -e ""$cyan"Installing WP-Multisite-Stack...\n"$nocol""
 
 	 puppet apply  --modulepath=./puppet/modules ./puppet/manifests/site.pp
 
 	if [[ $? -ne 0 ]]
 	 then
-	  echo -e "Puppet Installation failed\nexiting..."
+	  echo -e ""$red"Puppet Installation failed\nexiting..."$nocol""
 	fi
 }
 
 
-
+#Check if WPMS_Environment is not set , then proceed to set 
+#else ask if user wants to change or leave as it is
 if [[ -z $WPMS_ENVIRONMENT ]] || [[ ! `cat /etc/profile.d/wpms.sh | grep "$WPMS_ENVIRONMENT"` ]]
 then
    while :
@@ -167,7 +169,7 @@ do
 echo -e -n ""$green"What will you choose?
 
 1)Do not change anything
-2)Proceed to new config file generation using as defaults the values from sample config file
+2)Proceed to new config file generation using as defaults the values from sample config file,
 3)Proceed to new config file generation using as defaults the values from existing config file"$nocol": 1/2/3:"
 
 read line
@@ -181,12 +183,13 @@ read line
 
 	 2)
 	  echo -e ""$cyan"You chose 2: Setting values in "$sample_file" as default and proceeding to new file generation..."$nocol"\n"
-	  file="$WPMS_ENVIRONMENT"-vars.pp
+	  rm ../configs/"$WPMS_ENVIRONMENT"-wp-config.php
 	  break
 	  ;;
 
 	 3)
 	  sample_file=../configs/"$WPMS_ENVIRONMENT"-vars.pp
+	  rm ../configs/"$WPMS_ENVIRONMENT"-wp-config.php
 	  echo -e ""$cyan"You chose 3: Setting values in "$sample_file" as default and proceeding to new file generation..."$nocol"\n"
 	  break
 	  ;;
@@ -229,7 +232,7 @@ wrp_subdomain="$green Please enter "Yes" if wordpress shall be installed with Su
 separator=""$green"################################################################## $nocol"
 
 
-#If install.sh runs with option --config , display the existing confg variables
+#If install.sh runs with option --config , display the existing configurationg variables
 if [[ $1 == "--config" ]] || [[ $1 == "-c" ]]; then
    echo -e "$green Please find below existing configuration variables and their values. $nocol\n" 
      j=0
@@ -246,7 +249,7 @@ if [[ $1 == "--config" ]] || [[ $1 == "-c" ]]; then
      done < $file
 
 
- #Print new values from confg file to display that user could save them.
+
  for k in "${info[@]}"
   do
         var=`echo $k | cut -d "\$" -f2 | cut -d "=" -f1`
@@ -309,7 +312,7 @@ fi
 			 then
 			  break
 			 else
-		          echo "The value can be GIT or WEB."
+		          echo -e ""$red"The value can be GIT or WEB."$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
 		          read newvalue
 			fi
@@ -325,7 +328,7 @@ fi
                          then
                           break
                          else
-                          echo "Please provide valid URL."
+                          echo -e ""$red"Please provide valid URL."$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
                           read newvalue
                         fi
@@ -340,7 +343,7 @@ fi
                          then
                           break
                          else
-                          echo "Please answere Yes or No."
+                          echo -e ""$red"Please answere Yes or No."$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
                           read newvalue
                         fi
@@ -355,7 +358,7 @@ fi
                          then
                           break
                          else
-                          echo "Please answere Yes or No"
+                          echo -e ""$red"Please answere Yes or No"$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
                           read newvalue
                         fi
@@ -371,7 +374,7 @@ fi
                          then
                           break
                          else
-                          echo "Please answere Yes or No."
+                          echo -e ""$red"Please answere Yes or No."$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
                           read newvalue
                         fi
@@ -387,7 +390,7 @@ fi
 	             then
 	              break
 	             else
-	               echo "Please answere Yes or No."
+	               echo -e ""$red"Please answere Yes or No."$nocol""
 	               echo -e -n "(The default Value is $defaultvalue): "
 	               read newvalue
 		    fi
@@ -401,10 +404,10 @@ fi
                  then
 		  echo -e "$i" >> $tmp_file
 
-		  echo "Leaving as default..."
+		  echo -e ""$cyan"Leaving as default..."$nocol""
 		  echo -e "$var=$defaultvalue\n$separator\n"
 		 else
-		  echo -e "changing defaultvalue $defaultvalue of $var to \"$newvalue\" in $file\n\n$separator\n"
+		  echo -e ""$cyan"changing defaultvalue $defaultvalue of $var to \"$newvalue\" in $file\n\n$separator\n"$nocol""
                   echo "\$$var=\"$newvalue\"" >> $tmp_file
 	        fi
 	     else
@@ -413,9 +416,10 @@ fi
            fi
 
        done
+#Set Environment name in temporary config file before displaying to user for final decision
+sed -i 's,$wrp_env="dev",$wrp_env="'$WPMS_ENVIRONMENT'",' $tmp_file
 
-
-
+#Cat temporary config file created by user's answers and ask if user agrees with it proceed, else terminate script
 while :
 do
 	echo -e -n "`cat $tmp_file`\n\n"$green"Please confirm settings that you have entered":$nocol" Y/N:"

@@ -1,3 +1,6 @@
+#Specifies environment
+$wrp_env = "dev"
+
 #Specifies package name for apache installation, which is being provided to package manager such as yum. 
 $apache = "httpd"
 
@@ -94,3 +97,6 @@ $wrp_plugin_MU = "Yes"
 
 #Specifies Multisite Subdomain installation mode in case of "Yes" or Subdirectory mode in case of No
 $wrp_subdomain = "Yes"
+
+#Wordpress config path
+$wrp_config_path = "/var/wpms-stack/configs"
