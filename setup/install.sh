@@ -3,6 +3,7 @@
 #on Centos 6.5 x86_64 minimal installation machines 
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+TERM=linux
 
 if [[ -f /etc/profile.d/wpms.sh ]]
 then
@@ -28,6 +29,11 @@ if [[ $1 == -h ]] || [[  $1 == --help  ]]
 -h, --help:	Print this Help $nocol"
    exit 1
 fi
+randpw ()
+{ 
+  < /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-16}
+echo
+}
 
 
 #All stack and needed software instalation function
@@ -206,27 +212,27 @@ fi
 current_mysqlroot_pass="$green Please provide root password of mysql $nocol"
 wrp_metod="$green Please provide method by which worpdress must be installed.The method can be GIT or WEB $nocol"
 wp_get_address="$green Please provide URL from which the wordpress can be downloaded $nocol"
-wp_local_path="$green Please provide the full path of directory into which wordpress should be installed $nocol"
-wp_apache_local_path="$green Please provide the full path of public apache directory, which should be linked to wordpress install directory $nocol"
+#wp_local_path="$green Please provide the full path of directory into which wordpress should be installed $nocol"
+#wp_apache_local_path="$green Please provide the full path of public apache directory, which should be linked to wordpress install directory $nocol"
 #wrp_owner="$green Please provide owner of wordpress install directory $nocol"
 #wrp_group="$green Please provide group of wordpress install directory $nocol"
 mysqlconfigure="$green Please answer Yes if the script shall create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database $nocol"
 mysqldinstall="$green Please answer Yes if the script shall install mysql-server $nocol"
+wrp_admin_user="$green Please provide username of administrator account for wp-multisite-stack $nocol"
+wrp_admin_password="$green Please provide password of administrator account for wp-multisite-stack: Enter G to generate random password or leave blank to leave the default value $nocol"
 wrp_dbname="$green Please provide database name for wordpress $nocol"
 wrp_dbuser="$green Please provide database user for wordpress $nocol"
-wrp_dbpass="$green Please provide password for wordpress database user $nocol"
-wrp_dbhost_access="$green Please provide the host from which will the user have access to database $nocol"
-wrp_dbhost="$green Please provide the hostname or ip address of mysql to which worpdress shall connect $nocol"
+wrp_dbpass="$green Please provide password for wordpress database user: Enter G to generate random password or leave blank to leave the default value$nocol"
+#wrp_dbhost_access="$green Please provide the host from which will the user have access to database $nocol"
 wrp_mysql_port="$green Please provide the mysql port to which worpdress shall connect $nocol"
-wrp_mysqladm_user="$green Please provide the username which has privileges to grant accesses and create wp database on mysql server, e.g. root $nocol"
-wrp_mysqladm_pass="$green Please provide the password for mysql admin user $nocol"
-wrp_db_prefix="$green Please provide the database prefix, with which will be created tables $nocol"
+#wrp_mysqladm_user="$green Please provide the username which has privileges to grant accesses and create wp database on mysql server, e.g. root $nocol"
+#wrp_mysqladm_pass="$green Please provide the password for mysql admin user $nocol"
+#wrp_dbhost="$green Please provide the hostname or ip address of mysql to which worpdress shall connect $nocol"
+#wrp_db_prefix="$green Please provide the database prefix, with which will be created tables $nocol"
 #wrpcli="$green Please provide URL for Worpdress CLI $nocol"
 wrp_url="$green Please provide the domain name of wp-multisite-stack $nocol"
 wrp_title="$green Please provide title of wp-multisite-stack $nocol"
 wrp_admin_email="$green Please provide email address of administrator account for wp-multisite-stack $nocol"
-wrp_admin_user="$green Please provide username of administrator account for wp-multisite-stack $nocol"
-wrp_admin_password="$green Please provide password of administrator account for wp-multisite-stack $nocol"
 wrp_plugin_MU="$green Please provide if WordPress MU Domain Mapping Plugin will be installed $nocol"
 wrp_subdomain="$green Please enter "Yes" if wordpress shall be installed with Subdomain mode or "No" for Subdirectory mode installation $nocol"
 separator=""$green"################################################################## $nocol"
@@ -290,18 +296,45 @@ fi
       do
 	#Cut variable name from line in config file and assign to $var.
         var=`echo $i | cut -d "\$" -f2 | cut -d "=" -f1`
-
 	#Cut present value ov variable and assign to $defaultvalue.
 	defaultvalue=`echo $i | cut -d "\$" -f2 | cut -d "=" -f2`
 
+if [[ -f $tmp_file ]]
+then
 
+wrp_mysqladm_user=`cat $tmp_file | grep wrp_mysqladm_user | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
+wrp_mysqladm_pass=`cat $tmp_file | grep wrp_mysqladm_pass | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
+wrp_dbuser=`cat $tmp_file | grep wrp_dbuser | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
+wrp_dbhost=`cat $tmp_file | grep wrp_dbhost | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
+fi
 
+if [[ ! -z $wrp_mysqladm_user ]] && [[ -z $wrp_mysqladm_pass ]]
+then
+ mysqlconnect="mysql -u "$wrp_mysqladm_user" -h "$wrp_dbhost""
+else
+ if [[ ! -z $wrp_mysqladm_user ]] && [[ ! -z $wrp_mysqladm_pass ]]
+ then
+  mysqlconnect="mysql -u "$wrp_mysqladm_user" -h "$wrp_dbhost" -p"$wrp_mysqladm_pass""
+ fi
+
+fi
 	#Proceed if there exists comment for this variable on top of script
           if [[ ! -z  ${!var} ]] 
            then
-            echo -e -n "${!var}. \n (The default Value is $defaultvalue): "
 
-	    read newvalue
+	     #Check on step of entering password for mysql user and alert not to change password
+	     #if there exists such user	
+
+              if [[ -f "/etc/init.d/mysqld" ]] && [[ $var == wrp_dbpass ]] && [[ `$mysqlconnect -e "select User from mysql.user;" | grep "$wrp_dbuser"` ]]
+               then
+                echo -e "\n"$red"There is already user with username "$wrp_dbuser" in mysql database that ou have provided, please define the correct password for that user or installation will be broken!!!"$nocol""
+              fi
+
+	     #Display the default value before reading user's input for new value on each iteration
+             echo -e -n "${!var}. \n (The default Value is $defaultvalue): " 
+             #Read new value on each iteration
+             read newvalue
+
 
 		  #Ensure that user entered valid data for wrp_metod variable
 	       	  if [[ $var == "wrp_metod" ]]
@@ -396,7 +429,71 @@ fi
 		    fi
 		   done
 	         fi
-	
+
+
+		if [[ $var == "wrp_dbpass" ]]
+                 then
+                  while :
+                   do
+
+		      if [[ `echo "$newvalue" | tr '[:upper:]' '[:lower:]'` == g ]]
+		       then
+			   echo -e ""$cyan"Generating random password"$nocol""  
+			   newvalue=`randpw`
+			   break
+		       fi
+			if [[ -z `echo "$defaultvalue" | tr -d \"` ]] && [[ -z $newvalue ]]
+			  then
+			echo -e ""$cyan" Your default password is blank, generating random password... "$nocol""
+			  newvalue=`randpw`
+			  break
+			fi
+
+                 	if [[ -z "$newvalue" ]] && [[ ! -z `echo "$defaultvalue" | tr -d \"` ]]
+			 then
+			  break
+			 fi
+			if [[ ! -z "$newvalue" ]] && [[ "${#newvalue}" -ge 8 ]] && [[ ! `echo "$newvalue"` =~ .+\ +  ]]
+			 then
+			  break
+			fi
+		     echo -e ""$red"Your password must have at least 8 characters and must not contain spaces"$nocol""
+		     echo -e -n ""$cyan" Please enter password or hit Enter to leave the default parameter or G to generate random password- $defaultvalue: "$nocol""	
+		     read newvalue
+                   done
+                 fi
+
+		if [[ $var == "wrp_admin_password" ]]
+                 then
+                  while :
+                   do
+
+                      if [[ `echo "$newvalue" | tr '[:upper:]' '[:lower:]'` == g ]]
+                       then
+                           echo -e ""$cyan"Generating random password"$nocol""  
+                           newvalue=`randpw`
+                           break
+                       fi
+                        if [[ -z `echo "$defaultvalue" | tr -d \"` ]] && [[ -z $newvalue ]]
+                          then
+                        echo -e ""$cyan" Your default password is blank, generating random password... "$nocol""
+                          newvalue=`randpw`
+                          break
+                        fi
+
+                        if [[ -z "$newvalue" ]] && [[ ! -z `echo "$defaultvalue" | tr -d \"` ]]
+                         then
+                          break
+                         fi
+                        if [[ ! -z "$newvalue" ]] && [[ "${#newvalue}" -ge 8 ]] && [[ ! `echo "$newvalue"` =~ .+\ +  ]]
+                         then
+                          break
+                        fi
+                     echo -e ""$red"Your password must have at least 8 characters and must not contain spaces"$nocol""
+                     echo -e -n ""$cyan" Please enter password or hit Enter to leave the default parameter or G to generate random password- $defaultvalue: "$nocol""   
+                     read newvalue
+                   done
+                 fi
 
 
 		#Check if user entered new value , change the appropriate line in config file #else print message and leave as it is.

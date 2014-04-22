@@ -1,3 +1,8 @@
+#This is sample configuration file fro wpms-multisite stack installation.
+#Variables in This file is being used during installation process as defaults,
+#Please do not change or modify this file, instead use wpms-stack/setup/install.sh script, 
+#otherwize you risk to brake your wpstack installation.
+
 #Specifies environment
 $wrp_env = "dev"
 
@@ -50,6 +55,15 @@ $mysqlconfigure="Yes"
 #Specifies whether to install mysql-server.
 $mysqldinstall="Yes"
 
+#Specifies the username which will have privileges to grant accesses and create wp database
+$wrp_mysqladm_user = "root"
+
+#Specifies the password for mysql admin user
+$wrp_mysqladm_pass =""
+
+#Specifies the hostname or ip address of mysql to which worpdress shall connect.
+$wrp_dbhost = "localhost"
+
 #Specifies database name for wordpress
 $wrp_dbname = "wordpress"
 
@@ -57,22 +71,13 @@ $wrp_dbname = "wordpress"
 $wrp_dbuser = "wp_user"
 
 #Specifies mysql Password for wordpress
-$wrp_dbpass = "secretwppass"
+$wrp_dbpass = ""
 
 #The host from which will be granted access for wordpress user to wordpress database
 $wrp_dbhost_access = "localhost"
 
-#Specifies the hostname or ip address of mysql to which worpdress shall connect.
-$wrp_dbhost = "localhost"
-
 #Specifies the mysql port to which worpdress shall connect
 $wrp_mysql_port ="3306"
-
-#Specifies the username which will have privileges to grant accesses and create wp database
-$wrp_mysqladm_user = "root"
-
-#Specifies the password for mysql admin user
-$wrp_mysqladm_pass =""
 
 #Specifies the database prefix, with which will be created tables
 $wrp_db_prefix = "wp_"
@@ -90,7 +95,7 @@ $wrp_admin_email = "admin@localhost.dev"
 $wrp_admin_user = "admin"
 
 #Specifies password of administrator account for wp-multisite-stack.
-$wrp_admin_password = "admin"
+$wrp_admin_password = ""
 
 #Specifies if Multisite Plugin Manager will be installed.
 $wrp_plugin_MU = "Yes"
