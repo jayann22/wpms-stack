@@ -225,9 +225,9 @@ wrp_dbuser="$green Please provide database user for wordpress $nocol"
 wrp_dbpass="$green Please provide password for wordpress database user: Enter G to generate random password or leave blank to leave the default value$nocol"
 #wrp_dbhost_access="$green Please provide the host from which will the user have access to database $nocol"
 wrp_mysql_port="$green Please provide the mysql port to which worpdress shall connect $nocol"
-#wrp_mysqladm_user="$green Please provide the username which has privileges to grant accesses and create wp database on mysql server, e.g. root $nocol"
-#wrp_mysqladm_pass="$green Please provide the password for mysql admin user $nocol"
-#wrp_dbhost="$green Please provide the hostname or ip address of mysql to which worpdress shall connect $nocol"
+wrp_mysqladm_user="$green Please provide the username which has privileges to grant accesses and create wp database on mysql server, e.g. root $nocol"
+wrp_mysqladm_pass="$green Please provide the password for mysql admin user $nocol"
+wrp_dbhost="$green Please provide the hostname or ip address of mysql to which worpdress shall connect $nocol"
 #wrp_db_prefix="$green Please provide the database prefix, with which will be created tables $nocol"
 #wrpcli="$green Please provide URL for Worpdress CLI $nocol"
 wrp_url="$green Please provide the domain name of wp-multisite-stack $nocol"
@@ -302,34 +302,38 @@ fi
 if [[ -f $tmp_file ]]
 then
 
-wrp_mysqladm_user=`cat $tmp_file | grep wrp_mysqladm_user | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
-wrp_mysqladm_pass=`cat $tmp_file | grep wrp_mysqladm_pass | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
-wrp_dbuser=`cat $tmp_file | grep wrp_dbuser | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
-wrp_dbhost=`cat $tmp_file | grep wrp_dbhost | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
+db_admin=`cat $tmp_file | grep wrp_mysqladm_user | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
+db_admin_pass=`cat $tmp_file | grep wrp_mysqladm_pass | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
+wrp_db_user=`cat $tmp_file | grep wrp_dbuser | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
+wrp_db_host=`cat $tmp_file | grep wrp_dbhost | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
 fi
+echo db_admin="$db_admin"
+echo db_admin_pass="$db_admin_pass"
+echo wrp_db_user="$wrp_db_user"
+echo wrp_db_host="$wrp_db_host"
 
-if [[ ! -z $wrp_mysqladm_user ]] && [[ -z $wrp_mysqladm_pass ]]
+
+if [[ ! -z $db_admin ]] && [[ -z $db_admin_pass ]]
 then
- mysqlconnect="mysql -u "$wrp_mysqladm_user" -h "$wrp_dbhost""
+ mysqlconnect="mysql -u "$db_admin" -h "$wrp_db_host""
 else
- if [[ ! -z $wrp_mysqladm_user ]] && [[ ! -z $wrp_mysqladm_pass ]]
+ if [[ ! -z $db_admin ]] && [[ ! -z $db_admin_pass ]]
  then
-  mysqlconnect="mysql -u "$wrp_mysqladm_user" -h "$wrp_dbhost" -p"$wrp_mysqladm_pass""
+  mysqlconnect="mysql -u "$db_admin" -h "$wrp_db_host" -p"$db_admin_pass""
  fi
 
 fi
+echo $mysqlconnect
 	#Proceed if there exists comment for this variable on top of script
           if [[ ! -z  ${!var} ]] 
            then
 
 	     #Check on step of entering password for mysql user and alert not to change password
 	     #if there exists such user	
-
-              if [[ -f "/etc/init.d/mysqld" ]] && [[ $var == wrp_dbpass ]] && [[ `$mysqlconnect -e "select User from mysql.user;" | grep "$wrp_dbuser"` ]]
+              if [[ -f "/etc/init.d/mysqld" ]] && [[ $var == wrp_dbpass ]] && [[ `$mysqlconnect -e "select User from mysql.user;" | grep "$wrp_db_user"` ]]
                then
-                echo -e "\n"$red"There is already user with username "$wrp_dbuser" in mysql database that ou have provided, please define the correct password for that user or installation will be broken!!!"$nocol""
+                echo -e "\n"$red"There is already user with username "$wrp_db_user" in mysql database that you have provided, please define the correct password for that user or installation will be broken!!!"$nocol""
               fi
-
 	     #Display the default value before reading user's input for new value on each iteration
              echo -e -n "${!var}. \n (The default Value is $defaultvalue): " 
              #Read new value on each iteration
