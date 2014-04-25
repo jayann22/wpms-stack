@@ -309,8 +309,6 @@ wrp_db_host=`cat $tmp_file | grep wrp_dbhost | cut -d "\$" -f2 | cut -d "=" -f2 
 wrp_db_port=`cat $tmp_file | grep wrp_mysql_port | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
 fi
 
-echo wrp_db_port=$wrp_db_port
-
 if [[ ! -z $db_admin ]] && [[ -z $db_admin_pass ]]
 then
  mysqlconnect="mysql -u "$db_admin" -h "$wrp_db_host" --port "$wrp_db_port""
