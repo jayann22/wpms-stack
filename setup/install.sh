@@ -307,10 +307,6 @@ db_admin_pass=`cat $tmp_file | grep wrp_mysqladm_pass | cut -d "\$" -f2 | cut -d
 wrp_db_user=`cat $tmp_file | grep wrp_dbuser | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
 wrp_db_host=`cat $tmp_file | grep wrp_dbhost | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
 fi
-echo db_admin="$db_admin"
-echo db_admin_pass="$db_admin_pass"
-echo wrp_db_user="$wrp_db_user"
-echo wrp_db_host="$wrp_db_host"
 
 
 if [[ ! -z $db_admin ]] && [[ -z $db_admin_pass ]]
@@ -323,7 +319,6 @@ else
  fi
 
 fi
-echo $mysqlconnect
 	#Proceed if there exists comment for this variable on top of script
           if [[ ! -z  ${!var} ]] 
            then
