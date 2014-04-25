@@ -26,7 +26,7 @@ echo -e "Installing git...\n"
 yum install -y git
 
 echo -e "cloning wpms-stack repo...\n"
-git clone https://github.com/Link7/wpms-stack.git wpms-stack
+git clone https://github.com/Link7/wpms-stack.git /var/wpms-stack
 
 
 echo -e "please run the following command: $ cd wpms-stack/setup && sudo ./install.sh"
