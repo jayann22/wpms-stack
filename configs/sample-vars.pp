@@ -64,6 +64,9 @@ $wrp_mysqladm_pass =""
 #Specifies the hostname or ip address of mysql to which worpdress shall connect.
 $wrp_dbhost = "localhost"
 
+#Specifies the mysql port to which worpdress shall connect
+$wrp_mysql_port ="3306"
+
 #Specifies database name for wordpress
 $wrp_dbname = "wordpress"
 
@@ -75,9 +78,6 @@ $wrp_dbpass = ""
 
 #The host from which will be granted access for wordpress user to wordpress database
 $wrp_dbhost_access = "localhost"
-
-#Specifies the mysql port to which worpdress shall connect
-$wrp_mysql_port ="3306"
 
 #Specifies the database prefix, with which will be created tables
 $wrp_db_prefix = "wp_"

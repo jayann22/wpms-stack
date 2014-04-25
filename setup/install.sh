@@ -223,7 +223,7 @@ wrp_admin_password="$green Please provide password of administrator account for 
 wrp_dbname="$green Please provide database name for wordpress $nocol"
 wrp_dbuser="$green Please provide database user for wordpress $nocol"
 wrp_dbpass="$green Please provide password for wordpress database user: Enter G to generate random password or leave blank to leave the default value$nocol"
-#wrp_dbhost_access="$green Please provide the host from which will the user have access to database $nocol"
+wrp_dbhost_access="$green Please provide the host from which will the user have access to database $nocol"
 wrp_mysql_port="$green Please provide the mysql port to which worpdress shall connect $nocol"
 wrp_mysqladm_user="$green Please provide the username which has privileges to grant accesses and create wp database on mysql server, e.g. root $nocol"
 wrp_mysqladm_pass="$green Please provide the password for mysql admin user $nocol"
@@ -306,16 +306,18 @@ db_admin=`cat $tmp_file | grep wrp_mysqladm_user | cut -d "\$" -f2 | cut -d "=" 
 db_admin_pass=`cat $tmp_file | grep wrp_mysqladm_pass | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
 wrp_db_user=`cat $tmp_file | grep wrp_dbuser | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
 wrp_db_host=`cat $tmp_file | grep wrp_dbhost | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
+wrp_db_port=`cat $tmp_file | grep wrp_mysql_port | cut -d "\$" -f2 | cut -d "=" -f2 | tr -d \"`
 fi
 
+echo wrp_db_port=$wrp_db_port
 
 if [[ ! -z $db_admin ]] && [[ -z $db_admin_pass ]]
 then
- mysqlconnect="mysql -u "$db_admin" -h "$wrp_db_host""
+ mysqlconnect="mysql -u "$db_admin" -h "$wrp_db_host" --port "$wrp_db_port""
 else
  if [[ ! -z $db_admin ]] && [[ ! -z $db_admin_pass ]]
  then
-  mysqlconnect="mysql -u "$db_admin" -h "$wrp_db_host" -p"$db_admin_pass""
+  mysqlconnect="mysql -u "$db_admin" -h "$wrp_db_host" --port "$wrp_db_port" -p"$db_admin_pass""
  fi
 
 fi
