@@ -326,13 +326,19 @@ read line
 
 	 2)
 	  echo -e ""$cyan"You chose 2: Setting values in "$sample_file" as default and proceeding to new file generation..."$nocol"\n"
-	  rm "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-wp-config.php
+	  if [[ -f "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-wp-config.php ]]
+	  then	
+	   rm "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-wp-config.php
+	  fi
 	  break
 	  ;;
 
 	 3)
 	  sample_file="$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp
+	  if [[ -f "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-wp-config.php ]]
+	  then
 	  rm "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-wp-config.php
+	  fi
 	  echo -e ""$cyan"You chose 3: Setting values in "$sample_file" as default and proceeding to new file generation..."$nocol"\n"
 	  break
 	  ;;
@@ -356,10 +362,10 @@ wp_get_address="$green Please provide URL from which the wordpress can be downlo
 mysqlconfigure="$green Please answer Yes if the script shall create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database $nocol"
 mysqldinstall="$green Please answer Yes if the script shall install mysql-server $nocol"
 wrp_admin_user="$green Please provide username of administrator account for wp-multisite-stack $nocol"
-wrp_admin_password="$green Please provide password of administrator account for wp-multisite-stack: Enter G to generate random password or leave blank to leave the default value $nocol"
+wrp_admin_password="$green Please provide password of administrator account for wp-multisite-stack: $nocol"
 wrp_dbname="$green Please provide database name for wordpress $nocol"
 wrp_dbuser="$green Please provide database user for wordpress $nocol"
-wrp_dbpass="$green Please provide password for wordpress database user: Enter G to generate random password or leave blank to leave the default value$nocol"
+wrp_dbpass="$green Please provide password for wordpress database user:$nocol"
 wrp_dbhost_access="$green Please provide the host from which will the user have access to database $nocol"
 wrp_mysql_port="$green Please provide the mysql port to which worpdress shall connect $nocol"
 wrp_mysqladm_user="$green Please provide the username which has privileges to grant accesses and create wp database on mysql server, e.g. root $nocol"
@@ -419,16 +425,31 @@ else
  fi
 
 fi
+
+#Check and echo message if user mst enter any password
+if [[ $var == "wrp_dbpass"  ]] && [[ -z `echo "$defaultvalue" | tr -d \"` ]]
+ then
+ echo -e ""$cyan"This is your first instllation using \""$WPMS_ENVIRONMENT"\" environment name: Type your password or hit enter and script will generate random pasword for you."$nocol""
+fi
+if  [[ $var == "wrp_dbpass"  ]] && [[ ! -z `echo "$defaultvalue" | tr -d \"` ]]
+then
+ echo -e ""$cyan"You have already defined password in your previous installation: Type your password, hit enter to leave as default, or enter G to generate random."$nocol""
+fi
+
+
+
 	#Proceed if there exists comment for this variable on top of script
           if [[ ! -z  ${!var} ]] 
            then
 
 	     #Check on step of entering password for mysql user and alert not to change password
 	     #if there exists such user	
-              if [[ -f "/etc/init.d/mysqld" ]] && [[ $var == wrp_dbpass ]] && [[ `$mysqlconnect -e "select User from mysql.user;" | grep "$wrp_db_user"` ]]
+              if [[ $var == wrp_dbpass ]] && [[ `$mysqlconnect -e "select User from mysql.user;" | grep "$wrp_db_user"` ]]
                then
-                echo -e "\n"$red"There is already user with username "$wrp_db_user" in mysql database that you have provided, please define the correct password for that user or installation will be broken!!!"$nocol""
+                echo -e "\n"$red"Warning: There is already user with username "$wrp_db_user" in mysql database that you have provided, please define the correct password for that user or installation will be broken!!!"$nocol""
               fi
+
+
 	     #Display the default value before reading user's input for new value on each iteration
              echo -e -n "${!var}. \n (The default Value is $defaultvalue): " 
              #Read new value on each iteration
@@ -532,9 +553,9 @@ fi
 
 		if [[ $var == "wrp_dbpass" ]]
                  then
+
                   while :
                    do
-
 		      if [[ `echo "$newvalue" | tr '[:upper:]' '[:lower:]'` == g ]]
 		       then
 			   echo -e ""$cyan"Generating random password"$nocol""  
