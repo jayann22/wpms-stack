@@ -4,6 +4,7 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 TERM=linux
+INSTALLDIR="/var/wpms-stack"
 
 if [[ -f /etc/profile.d/wpms.sh ]]
 then
@@ -20,15 +21,147 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+#This Function is crated for
+#1)Git Bare repository installation at /var/wpms-stack.git and 
+#2)Cloning of https://github.com/Link7/wpms-stack.git repository into /var/wpms-stack
+#3)Setting up hook scripts to keep update bare repository with working directory
+
+gitinstall ()
+{
+  if [[ ! `rpm -qa | grep rpmforge` ]]
+  then
+
+   echo -e ""$cyan"Installing and enabling rpmforge extras repository..."$nocol""
+   rpm -i 'http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm'
+    if [[ $? -ne 0 ]]
+    then
+     echo -e ""$red"echo failed to install rpmforge repos"$nocol""
+     exit 1
+    fi
+   rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt 
+   if [[ $? -ne 0 ]]
+    then
+     echo -e ""$red"echo failed to install rpmforge repos"$nocol""
+     exit 1
+    fi 
+
+   sed -i '15,20s/enabled = 0/enabled = 1/' /etc/yum.repos.d/rpmforge.repo
+    if [[ $? -ne 0 ]]
+    then
+     echo -e ""$red"echo failed to install rpmforge repos"$nocol""
+     exit 1
+    fi
+
+  fi
+
+
+  echo -e ""$cyan"Installing git...\n"$nocol""
+  yum install -y git
+  if [[ $? -ne 0 ]]
+    then
+     echo -e ""$red"echo failed to install git"$nocol""
+     exit 1
+  fi
+
+
+  # clone wpms-stack repo onto server
+  git clone --bare https://github.com/Link7/wpms-stack.git /var/wpms-stack.git
+
+  # create location where repo will be checked out
+  git init /var/wpms-stack
+
+  # add server git repo as remote to checked out dir
+  cd /var/wpms-stack
+  git remote add hub /var/wpms-stack.git
+  git pull hub master
+
+
+
+  # setup git hooks
+
+  FILE="/var/wpms-stack.git/hooks/post-update"
+
+  /bin/cat <<EOM >$FILE
+  #!/bin/sh
+
+  echo
+  echo "**** Pulling changes into Prime [Hub's post-update hook]"
+  echo
+
+  cd /var/wpms-stack || exit
+  unset GIT_DIR
+  git pull hub master
+
+  exec git-update-server-info
+EOM
+
+  chmod +x $FILE
+
+
+  FILE="/var/wpms-stack/.git/hooks/post-commit"
+
+  /bin/cat <<EOM >$FILE
+
+  #!/bin/sh
+
+  echo
+  echo "**** pushing changes to Hub [Prime's post-commit hook]"
+  echo
+
+  git push hub
+EOM
+
+  chmod +x $FILE
+
+}
+
 # Print help
 
 if [[ $1 == -h ]] || [[  $1 == --help  ]] 
   then
    echo -e "$green Listing available options that could be passed to install.sh.\n
--c, --config:    Print existing configuration varables with their values
--h, --help:	Print this Help $nocol"
-   exit 1
+-c, --config:       Print existing configuration varables with their values
+-h, --help:	    Print this Help
+-g, --gitinstall:   Only Clone remote git repository and create bare repo with hook scripts$nocol"
+exit 1
 fi
+
+if [[ $1 == -g ]] || [[  $1 == --gitinstall  ]]
+ then
+   echo -e ""$green" Clonning git repository from github and installing bare repository\n"
+   gitinstall
+exit 1
+fi
+
+#If install.sh runs with option --config , display the existing configurationg variables
+if [[ $1 == "--config" ]] || [[ $1 == "-c" ]]
+then
+
+if [[ -f "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp ]]
+
+echo -e ""$cyan"Your configuration file is "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp"$nocol""
+
+then
+
+   echo -e ""$green"\nPlease find below existing configuration variables and their values."$nocol"\n"
+     j=0
+     while read -e line
+       do
+
+echo -e ""$green"$line"$nocol""
+
+     done < "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp
+
+
+   exit 1
+else
+echo -e ""$red" You have not created configuration file yet"$nocol""
+exit 1
+fi
+fi
+
+
+
 randpw ()
 { 
   < /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-16}
@@ -41,7 +174,7 @@ installeverything () {
 
 
 	#Set symink which points to $WPMS-Environment-vars.pp . This link is included in file setup/puppet/modules/conf/init.pp as puppet configuration settings.
-	ln -fs `pwd`/../configs/"$WPMS_ENVIRONMENT"-vars.pp  /tmp/envinit.pp
+	ln -fs "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp  /tmp/envinit.pp
 
 
 	#Install wget
@@ -102,8 +235,8 @@ installeverything () {
 
 	#Start wp-multisite installation, with puppet apply, check if failed,exit with message
 	echo -e ""$cyan"Installing WP-Multisite-Stack...\n"$nocol""
-
-	 puppet apply  --modulepath=./puppet/modules ./puppet/manifests/site.pp
+	 cd "$INSTALLDIR"/setup
+	 puppet apply  --modulepath="$INSTALLDIR"/setup/puppet/modules "$INSTALLDIR"/setup/puppet/manifests/site.pp
 
 	if [[ $? -ne 0 ]]
 	 then
@@ -111,6 +244,10 @@ installeverything () {
 	fi
 }
 
+#Function for standard Installation Priocedure
+
+standardinstall ()
+{
 
 #Check if WPMS_Environment is not set , then proceed to set 
 #else ask if user wants to change or leave as it is
@@ -119,7 +256,7 @@ then
    while :
    do
     echo -n -e "$green PLease provide name for your environment: $nocol"
-    read line
+    read -e line
 
      if [[ $line =~ ^[a-zA-Z0-9]+$ ]]
        then
@@ -137,7 +274,7 @@ else
  echo -e -n "$green Enter new name for your environment or press enter to leave as"$nocol" $WPMS_ENVIRONMENT:"
    while :
    do
-    read line
+    read -e line
        if [[ -z $line ]]
         then 
 	  echo -e "$green The environment name didn't change... $nocol\n"
@@ -161,13 +298,13 @@ fi
 
 
 #Setting correct configuration file for wordpress installation
-sample_file=../configs/sample-vars.pp
+sample_file="$INSTALLDIR"/configs/sample-vars.pp
 tmp_file=/tmp/env-vars`date +%N`.pp
-file=../configs/"$WPMS_ENVIRONMENT"-vars.pp
+file="$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp
 i=0
 
 #If configuration file already exists
-if [[ -e ../configs/"$WPMS_ENVIRONMENT"-vars.pp ]]
+if [[ -e "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp ]]
  then
 echo -e ""$cyan"You already have configuration file for environment named "$WPMS_ENVIRONMENT"\n"
 while :
@@ -189,13 +326,13 @@ read line
 
 	 2)
 	  echo -e ""$cyan"You chose 2: Setting values in "$sample_file" as default and proceeding to new file generation..."$nocol"\n"
-	  rm ../configs/"$WPMS_ENVIRONMENT"-wp-config.php
+	  rm "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-wp-config.php
 	  break
 	  ;;
 
 	 3)
-	  sample_file=../configs/"$WPMS_ENVIRONMENT"-vars.pp
-	  rm ../configs/"$WPMS_ENVIRONMENT"-wp-config.php
+	  sample_file="$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp
+	  rm "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-wp-config.php
 	  echo -e ""$cyan"You chose 3: Setting values in "$sample_file" as default and proceeding to new file generation..."$nocol"\n"
 	  break
 	  ;;
@@ -238,47 +375,10 @@ wrp_subdomain="$green Please enter "Yes" if wordpress shall be installed with Su
 separator=""$green"################################################################## $nocol"
 
 
-#If install.sh runs with option --config , display the existing configurationg variables
-if [[ $1 == "--config" ]] || [[ $1 == "-c" ]]; then
-   echo -e "$green Please find below existing configuration variables and their values. $nocol\n" 
-     j=0
-     while read line
-       do
-
-        if [[ ! $line =~ ^#.* ]] && [[ ! $line =~ "^\ +$" ]] && [[ ! -z $line ]]
-         then
-          info[$j]=`echo $line | tr -d ' '`
-          j=$((j+1))
-        fi
-
-
-     done < $file
-
-
-
- for k in "${info[@]}"
-  do
-        var=`echo $k | cut -d "\$" -f2 | cut -d "=" -f1`
-
-        #Cut present value ov variable and assign to $defaultvalue.
-        value=`echo $k | cut -d "\$" -f2 | cut -d "=" -f2`
-
-      if [[ ! -z  ${!var} ]]
-        then
-         echo -e " $var = $value "
-      fi
- 
-   done
-
-
-
-   exit 1
-fi
-
 
 
 #Read Sample Configuration file and insert not commented non empty values into vars array
-     while read line
+     while read -e line
        do
 
         if [[ ! $line =~ ^#.* ]] && [[ ! $line =~ "^\ +$" ]] && [[ ! -z $line ]]
@@ -291,7 +391,7 @@ fi
      done < $sample_file
 
 
-    #Read each element in array, cut/assign appropriate values, read new value on command line and change in cofig file if needed.
+    #Read each element in array, cut/assign appropriate values, read -e new value on command line and change in cofig file if needed.
      for i in "${vars[@]}"
       do
 	#Cut variable name from line in config file and assign to $var.
@@ -332,7 +432,7 @@ fi
 	     #Display the default value before reading user's input for new value on each iteration
              echo -e -n "${!var}. \n (The default Value is $defaultvalue): " 
              #Read new value on each iteration
-             read newvalue
+             read -e newvalue
 
 
 		  #Ensure that user entered valid data for wrp_metod variable
@@ -346,7 +446,7 @@ fi
 			 else
 		          echo -e ""$red"The value can be GIT or WEB."$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
-		          read newvalue
+		          read -e newvalue
 			fi
 		      done
 		  fi
@@ -362,7 +462,7 @@ fi
                          else
                           echo -e ""$red"Please provide valid URL."$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
-                          read newvalue
+                          read -e newvalue
                         fi
                       done
                   fi
@@ -377,7 +477,7 @@ fi
                          else
                           echo -e ""$red"Please answere Yes or No."$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
-                          read newvalue
+                          read -e newvalue
                         fi
                       done
                   fi
@@ -392,7 +492,7 @@ fi
                          else
                           echo -e ""$red"Please answere Yes or No"$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
-                          read newvalue
+                          read -e newvalue
                         fi
                       done
                   fi
@@ -408,7 +508,7 @@ fi
                          else
                           echo -e ""$red"Please answere Yes or No."$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
-                          read newvalue
+                          read -e newvalue
                         fi
 		     done
 		   fi
@@ -424,7 +524,7 @@ fi
 	             else
 	               echo -e ""$red"Please answere Yes or No."$nocol""
 	               echo -e -n "(The default Value is $defaultvalue): "
-	               read newvalue
+	               read -e newvalue
 		    fi
 		   done
 	         fi
@@ -458,7 +558,7 @@ fi
 			fi
 		     echo -e ""$red"Your password must have at least 8 characters and must not contain spaces"$nocol""
 		     echo -e -n ""$cyan" Please enter password or hit Enter to leave the default parameter or G to generate random password- $defaultvalue: "$nocol""	
-		     read newvalue
+		     read -e newvalue
                    done
                  fi
 
@@ -490,7 +590,7 @@ fi
                         fi
                      echo -e ""$red"Your password must have at least 8 characters and must not contain spaces"$nocol""
                      echo -e -n ""$cyan" Please enter password or hit Enter to leave the default parameter or G to generate random password- $defaultvalue: "$nocol""   
-                     read newvalue
+                     read -e newvalue
                    done
                  fi
 
@@ -520,7 +620,7 @@ while :
 do
 	echo -e -n "`cat $tmp_file`\n\n"$green"Please confirm settings that you have entered":$nocol" Y/N:"
 
-  read line
+  read -e line
 
 	if [[ `echo $line | tr '[:upper:]' '[:lower:]'` == y ]]
 		then
@@ -538,8 +638,21 @@ do
 
 done
 
+}
+#End of standardinstall function
 
-#After Config file successful configuration we can continue to puppet installation
 
+if [[ -d "$INSTALLDIR" ]] || [[ -d "$INSTALLDIR".git ]]
+then
+echo -e ""$cyan"you have directory at /var/wpms-stack or /var/wpms-stack.git, Ommitting git clone and bare repo installation step"$nocol""
+cd "$INSTALLDIR"/setup
+standardinstall
 installeverything
+else
+gitinstall
+cd "$INSTALLDIR"/setup
+standardinstall
+installeverything
+fi
 
+echo -e "\n\n"$cyan" You can push-pull from server repo through ssh \n server repo url is: ssh://root@SERVERIP:PORT"$INSTALLDIR".git"$nocol""

@@ -10,8 +10,41 @@ echo "This script must be run as root" 1>&2
    exit 1
 fi
 
+if [[ ! `rpm -qa | grep rpmforge` ]]
+then
+
+ echo -e "Installing and enabling rpmforge extras repository..."
+ rpm -i 'http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm'
+  if [[ $? -ne 0 ]]
+  then
+   echo -e "echo failed to install rpmforge repos"
+   exit 1
+  fi
+ rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt 
+ if [[ $? -ne 0 ]]
+  then
+   echo -e "echo failed to install rpmforge repos"
+   exit 1
+  fi 
+
+ sed -i '15,20s/enabled = 0/enabled = 1/' /etc/yum.repos.d/rpmforge.repo
+  if [[ $? -ne 0 ]]
+  then
+   echo -e "echo failed to install rpmforge repos"
+   exit 1
+  fi
+
+fi
+
+
 echo -e "Installing git...\n"
 yum install -y git
+if [[ $? -ne 0 ]]
+  then
+   echo -e "echo failed to install git"
+   exit 1
+fi
+
 
 # clone wpms-stack repo onto server
 git clone --bare https://github.com/Link7/wpms-stack.git /var/wpms-stack.git
@@ -66,6 +99,6 @@ chmod +x $FILE
 # server repo url is: ssh://USER@SERVERIP:PORT/var/wpms-stack.git
 # when you push to that url it will be update the server
 # when you update somethin on the server itself and commit it 
-#  you can then also pull the changes to your local from the server
+# you can then also pull the changes to your local from the server
 
 
