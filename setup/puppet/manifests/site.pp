@@ -59,7 +59,7 @@ notify { 'note-db-run':
             message => 'START DB CONFIGURATION',
             }
 
-Notify[note-install-finish-apache]->Mysql::Install-wp-mysql['mysqldb']-> Notify[note-running-mysql]->Notify['note-db-end']->Wordpress::Install-wp['wordpress']-> Notify['note-wp-end']-> Exec['end-msg']
+Notify[note-install-finish-apache]->Mysql::Install-wp-mysql['mysqldb']->Notify['note-db-end']->Wordpress::Install-wp['wordpress']-> Notify['note-wp-end']-> Exec['end-msg']
       }
       debian, ubuntu: { $apache = "apache2" }
       default: {err("Unrecognized operating system") 

@@ -63,6 +63,12 @@ gitinstall ()
      exit 1
   fi
 
+yum install -y mysql
+if [[ $? -ne 0 ]]
+then
+ echo -e ""$red"echo failed to install mysql"$nocol""
+exit 1
+fi
 
   # clone wpms-stack repo onto server
   git clone --bare https://github.com/Link7/wpms-stack.git /var/wpms-stack.git
