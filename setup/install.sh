@@ -63,12 +63,6 @@ gitinstall ()
      exit 1
   fi
 
-yum install -y mysql
-if [[ $? -ne 0 ]]
-then
- echo -e ""$red"echo failed to install mysql"$nocol""
-exit 1
-fi
 
   # clone wpms-stack repo onto server
   git clone --bare https://github.com/Link7/wpms-stack.git /var/wpms-stack.git
@@ -254,6 +248,18 @@ installeverything () {
 
 standardinstall ()
 {
+
+#Check if mysql client is not installed, install it
+if [[ ! -f /usr/bin/mysql ]]
+then
+echo -e ""$cyan" Installing mysql client""$nocol"
+yum install -y mysql &> /dev/null
+if [[ $? -ne 0 ]]
+then
+echo -e ""$red" Failed to install mysql client"$nocol""
+fi
+
+fi
 
 #Check if WPMS_Environment is not set , then proceed to set 
 #else ask if user wants to change or leave as it is
@@ -461,9 +467,9 @@ fi
 
 	     #Check on step of entering password for mysql user and alert not to change password
 	     #if there exists such user	
-              if [[ $var == wrp_dbpass ]] && [[ `$mysqlconnect -e "select User from mysql.user;" | grep "$wrp_db_user"` ]]
+              if [[ $var == wrp_dbpass ]] && [[ `$mysqlconnect -e "select User from mysql.user;" | grep "$wrp_db_user" ` ]] &> /dev/null
                then
-                echo -e "\n"$red"Warning: There is already user with username "$wrp_db_user" in mysql database that you have provided, please define the correct password for that user or installation will be broken!!!"$nocol""
+                echo -e "\n"$red"Warning: User with username "$wrp_db_user" exists in mysql database, please define the correct password for that user or installation will be broken!!!"$nocol""
               fi
 
 
