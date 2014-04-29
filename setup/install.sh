@@ -426,16 +426,27 @@ else
 
 fi
 
-#Check and echo message if user mst enter any password
+#Check and echo message if user must enter wrp_dbpass password
 if [[ $var == "wrp_dbpass"  ]] && [[ -z `echo "$defaultvalue" | tr -d \"` ]]
  then
- echo -e ""$cyan"This is your first instllation using \""$WPMS_ENVIRONMENT"\" environment name: Type your password or hit enter and script will generate random pasword for you."$nocol""
+ echo -e ""$cyan"This is your first instllation using \""$WPMS_ENVIRONMENT"\" environment name: Enter password or hit enter and script will generate random pasword for you."$nocol""
 fi
 if  [[ $var == "wrp_dbpass"  ]] && [[ ! -z `echo "$defaultvalue" | tr -d \"` ]]
 then
- echo -e ""$cyan"You have already defined password in your previous installation: Type your password, hit enter to leave as default, or enter G to generate random."$nocol""
+ echo -e ""$cyan"You have already defined password in your previous installation: Type new password, hit enter to leave as default, or enter G to generate random."$nocol""
 fi
 
+#Check and echo message if user must enter wrp_admin_password password
+if [[ $var == "wrp_admin_password"  ]] && [[ -z `echo "$defaultvalue" | tr -d \"` ]]
+ then
+ echo -e ""$cyan"This is your first instllation using \""$WPMS_ENVIRONMENT"\" environment name: Enter password or hit enter and script will generate random pasword for
+ you."$nocol""
+fi
+if  [[ $var == "wrp_admin_password"  ]] && [[ ! -z `echo "$defaultvalue" | tr -d \"` ]]
+then
+ echo -e ""$cyan"You have already defined password in your previous installation: Type new password, hit enter to leave as default, or enter G to generate random."$nocol"
+"
+fi
 
 
 	#Proceed if there exists comment for this variable on top of script
