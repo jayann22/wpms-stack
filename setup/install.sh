@@ -1,5 +1,5 @@
 #!/bin/bash
-#This script is intended for automatic wordpress multisite installation 
+#This script is intended for automatic WordPress multisite installation 
 #on Centos 6.5 x86_64 minimal installation machines 
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -128,7 +128,7 @@ fi
 
 if [[ $1 == -g ]] || [[  $1 == --gitinstall  ]]
  then
-   echo -e ""$green" Clonning git repository from github and installing bare repository\n"
+   echo -e ""$green" Cloning git repository from github and installing bare repository\n"
    gitinstall
 exit 1
 fi
@@ -189,7 +189,7 @@ installeverything () {
 
 	if [[ $? -ne 0 ]]
 	 then
-	  echo -e ""$red"Wget Installation failed\nexiting..."$nocol""
+	  echo -e ""$red"Wget installation failed\nexiting..."$nocol""
 	  exit 1
 	fi
 
@@ -229,18 +229,18 @@ installeverything () {
 
 	if [[ $? -ne 0 ]]
 	 then
-	  echo -e ""$red"Puppet Installation failed\nexiting..."$nocol""
+	  echo -e ""$red"Puppet installation failed\nexiting..."$nocol""
 	  exit 1
 	fi
 
-	#Start wp-multisite installation, with puppet apply, check if failed,exit with message
-	echo -e ""$cyan"Installing WP-Multisite-Stack...\n"$nocol""
+	#Start wpms installation, with puppet apply, check if failed,exit with message
+	echo -e ""$cyan"Installing wpms-stack...\n"$nocol""
 	 cd "$INSTALLDIR"/setup
 	 puppet apply  --modulepath="$INSTALLDIR"/setup/puppet/modules "$INSTALLDIR"/setup/puppet/manifests/site.pp
 
 	if [[ $? -ne 0 ]]
 	 then
-	  echo -e ""$red"Puppet Installation failed\nexiting..."$nocol""
+	  echo -e ""$red"Puppet installation failed\nexiting..."$nocol""
 	fi
 }
 
@@ -267,7 +267,7 @@ if [[ -z $WPMS_ENVIRONMENT ]] || [[ ! `cat /etc/profile.d/wpms.sh | grep "$WPMS_
 then
    while :
    do
-    echo -n -e "$green PLease provide name for your environment: $nocol"
+    echo -n -e "$green PLease provide a name for your environment: $nocol"
     read -e line
 
      if [[ $line =~ ^[a-zA-Z0-9]+$ ]]
@@ -283,7 +283,7 @@ echo "export WPMS_ENVIRONMENT=$line" >> /etc/profile.d/wpms.sh && source /etc/pr
 
 else
  echo -e "$green You have already set WPMS_ENVIRONMENT to $WPMS_ENVIRONMENT. $nocol" 
- echo -e -n "$green Enter new name for your environment or press enter to leave as"$nocol" $WPMS_ENVIRONMENT:"
+ echo -e -n "$green Enter a new name for your environment or press enter to leave it as"$nocol" $WPMS_ENVIRONMENT:"
    while :
    do
     read -e line
@@ -300,7 +300,7 @@ else
           break
 	 else
          echo -e "$red The environment name must not be empty and must contain only letters and digits $nocol"
-         echo -e -n "$green please enter new name or press enter to leave as $WPMS_ENVIRONMENT $nocol"
+         echo -e -n "$green Please enter new name or press enter to leave it as $WPMS_ENVIRONMENT $nocol"
      fi
 
     done
@@ -309,7 +309,7 @@ else
 fi
 
 
-#Setting correct configuration file for wordpress installation
+#Setting correct configuration file for WordPress installation
 sample_file="$INSTALLDIR"/configs/sample-vars.pp
 tmp_file=/tmp/env-vars`date +%N`.pp
 file="$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp
@@ -318,20 +318,20 @@ i=0
 #If configuration file already exists
 if [[ -e "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp ]]
  then
-echo -e ""$cyan"You already have configuration file for environment named "$WPMS_ENVIRONMENT"\n"
+echo -e ""$cyan"You already have a configuration file for the environment named "$WPMS_ENVIRONMENT"\n"
 while :
 do
 echo -e -n ""$green"What will you choose?
 
 1)Do not change anything
-2)Proceed to new config file generation using as defaults the values from sample config file,
-3)Proceed to new config file generation using as defaults the values from existing config file"$nocol": 1/2/3:"
+2)Proceed to new config file generation using the values from sample config file as defaults,
+3)Proceed to new config file generation using the values from existing config file as defaults"$nocol": 1/2/3:"
 
 read line
 
    case "$line" in
 	 1)
- 	  echo -e ""$cyan"You chose 1: Installing wp-multisite-stack using options in existing "$WPMS_ENVIRONMENT"-vars.pp"$nocol"\n"
+ 	  echo -e ""$cyan"You chose 1: Installing wpms-stack using options in existing "$WPMS_ENVIRONMENT"-vars.pp"$nocol"\n"
 	  installeverything
           exit 1
 	  ;;
@@ -365,31 +365,31 @@ fi
 
 #The comments for each variable. If script determines variable with comment, it will ask user on command line.
 current_mysqlroot_pass="$green Please provide root password of mysql $nocol"
-wrp_metod="$green Please provide method by which worpdress must be installed.The method can be GIT or WEB $nocol"
-wp_get_address="$green Please provide URL from which the wordpress can be downloaded $nocol"
-#wp_local_path="$green Please provide the full path of directory into which wordpress should be installed $nocol"
-#wp_apache_local_path="$green Please provide the full path of public apache directory, which should be linked to wordpress install directory $nocol"
-#wrp_owner="$green Please provide owner of wordpress install directory $nocol"
-#wrp_group="$green Please provide group of wordpress install directory $nocol"
-mysqlconfigure="$green Please answer Yes if the script shall create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database $nocol"
+wrp_metod="$green Please provide method by which WordPress must be installed. The method can be GIT or WEB $nocol"
+wp_get_address="$green Please provide URL from which the WordPress can be downloaded $nocol"
+#wp_local_path="$green Please provide the full path of directory into which WordPress should be installed $nocol"
+#wp_apache_local_path="$green Please provide the full path of public apache directory, which should be linked to WordPress install directory $nocol"
+#wrp_owner="$green Please provide owner of WordPress install directory $nocol"
+#wrp_group="$green Please provide group of WordPress install directory $nocol"
+mysqlconfigure="$green Please answer Yes if the script shall create mysql database, mysql user for WordPress and grant accesses for the created user to WordPress database $nocol"
 mysqldinstall="$green Please answer Yes if the script shall install mysql-server $nocol"
-wrp_admin_user="$green Please provide username of administrator account for wp-multisite-stack $nocol"
-wrp_admin_password="$green Please provide password of administrator account for wp-multisite-stack: $nocol"
-wrp_dbname="$green Please provide database name for wordpress $nocol"
-wrp_dbuser="$green Please provide database user for wordpress $nocol"
-wrp_dbpass="$green Please provide password for wordpress database user:$nocol"
+wrp_admin_user="$green Please provide username of administrator account for wpms-stack $nocol"
+wrp_admin_password="$green Please provide password of administrator account for wpms-stack: $nocol"
+wrp_dbname="$green Please provide database name for WordPress $nocol"
+wrp_dbuser="$green Please provide database user for WordPress $nocol"
+wrp_dbpass="$green Please provide password for WordPress database user:$nocol"
 wrp_dbhost_access="$green Please provide the host from which will the user have access to database $nocol"
-wrp_mysql_port="$green Please provide the mysql port to which worpdress shall connect $nocol"
+wrp_mysql_port="$green Please provide the mysql port to which WordPress shall connect $nocol"
 wrp_mysqladm_user="$green Please provide the username which has privileges to grant accesses and create wp database on mysql server, e.g. root $nocol"
 wrp_mysqladm_pass="$green Please provide the password for mysql admin user $nocol"
-wrp_dbhost="$green Please provide the hostname or ip address of mysql to which worpdress shall connect $nocol"
+wrp_dbhost="$green Please provide the hostname or ip address of mysql to which WordPress shall connect $nocol"
 #wrp_db_prefix="$green Please provide the database prefix, with which will be created tables $nocol"
-#wrpcli="$green Please provide URL for Worpdress CLI $nocol"
-wrp_url="$green Please provide the domain name of wp-multisite-stack $nocol"
-wrp_title="$green Please provide title of wp-multisite-stack $nocol"
-wrp_admin_email="$green Please provide email address of administrator account for wp-multisite-stack $nocol"
+#wrpcli="$green Please provide URL for WordPress CLI $nocol"
+wrp_url="$green Please provide the main domain name of your WordPress Multisite installation $nocol"
+wrp_title="$green Please provide title of your WordPress Multisite installation $nocol"
+wrp_admin_email="$green Please provide email address of administrator account for WordPress $nocol"
 wrp_plugin_MU="$green Please provide if WordPress MU Domain Mapping Plugin will be installed $nocol"
-wrp_subdomain="$green Please enter "Yes" if wordpress shall be installed with Subdomain mode or "No" for Subdirectory mode installation $nocol"
+wrp_subdomain="$green Please enter "Yes" if WordPress Mutisite shall be installed in Subdomain mode or "No" for Subdirectory mode installation $nocol"
 separator=""$green"################################################################## $nocol"
 
 
@@ -441,22 +441,21 @@ fi
 #Check and echo message if user must enter wrp_dbpass password
 if [[ $var == "wrp_dbpass"  ]] && [[ -z `echo "$defaultvalue" | tr -d \"` ]]
  then
- echo -e ""$cyan"This is your first instllation using \""$WPMS_ENVIRONMENT"\" environment name: Enter password or hit enter and script will generate random pasword for you."$nocol""
+ echo -e ""$cyan"This is your first instllation using \""$WPMS_ENVIRONMENT"\" environment name: Enter password or leave it blank to use a randomly generated pasword."$nocol""
 fi
 if  [[ $var == "wrp_dbpass"  ]] && [[ ! -z `echo "$defaultvalue" | tr -d \"` ]]
 then
- echo -e ""$cyan"You have already defined password in your previous installation: Type new password, hit enter to leave as default, or enter G to generate random."$nocol""
+ echo -e ""$cyan"You have already defined a password in your previous installation: Type new password, hit enter to leave it the same, or type G to generate random."$nocol""
 fi
 
 #Check and echo message if user must enter wrp_admin_password password
 if [[ $var == "wrp_admin_password"  ]] && [[ -z `echo "$defaultvalue" | tr -d \"` ]]
  then
- echo -e ""$cyan"This is your first instllation using \""$WPMS_ENVIRONMENT"\" environment name: Enter password or hit enter and script will generate random pasword for
- you."$nocol""
+ echo -e ""$cyan"This is your first instllation using \""$WPMS_ENVIRONMENT"\" environment name: Enter password or leave it blank to use a randomly generated pasword."$nocol""
 fi
 if  [[ $var == "wrp_admin_password"  ]] && [[ ! -z `echo "$defaultvalue" | tr -d \"` ]]
 then
- echo -e ""$cyan"You have already defined password in your previous installation: Type new password, hit enter to leave as default, or enter G to generate random."$nocol"
+ echo -e ""$cyan"You have already defined a password in your previous installation:  Type new password, hit enter to leave it the same, or type G to generate random."$nocol"
 "
 fi
 
@@ -469,7 +468,7 @@ fi
 	     #if there exists such user	
               if [[ $var == wrp_dbpass ]] && [[ `$mysqlconnect -e "select User from mysql.user;" | grep "$wrp_db_user" ` ]] &> /dev/null
                then
-                echo -e "\n"$red"Warning: User with username "$wrp_db_user" exists in mysql database, please define the correct password for that user or installation will be broken!!!"$nocol""
+                echo -e "\n"$red"Warning: User with username "$wrp_db_user" already exists in mysql database, please define the correct password for that user or installation will be broken!!!"$nocol""
               fi
 
 
@@ -519,7 +518,7 @@ fi
                          then
                           break
                          else
-                          echo -e ""$red"Please answere Yes or No."$nocol""
+                          echo -e ""$red"Please answer Yes or No."$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
                           read -e newvalue
                         fi
@@ -534,7 +533,7 @@ fi
                          then
                           break
                          else
-                          echo -e ""$red"Please answere Yes or No"$nocol""
+                          echo -e ""$red"Please answer Yes or No"$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
                           read -e newvalue
                         fi
@@ -550,7 +549,7 @@ fi
                          then
                           break
                          else
-                          echo -e ""$red"Please answere Yes or No."$nocol""
+                          echo -e ""$red"Please answer Yes or No."$nocol""
 			  echo -e -n "(The default Value is $defaultvalue): "
                           read -e newvalue
                         fi
@@ -566,7 +565,7 @@ fi
 	             then
 	              break
 	             else
-	               echo -e ""$red"Please answere Yes or No."$nocol""
+	               echo -e ""$red"Please answer Yes or No."$nocol""
 	               echo -e -n "(The default Value is $defaultvalue): "
 	               read -e newvalue
 		    fi
@@ -601,7 +600,7 @@ fi
 			  break
 			fi
 		     echo -e ""$red"Your password must have at least 8 characters and must not contain spaces"$nocol""
-		     echo -e -n ""$cyan" Please enter password or hit Enter to leave the default parameter or G to generate random password- $defaultvalue: "$nocol""	
+		     echo -e -n ""$cyan" Type new password, hit enter to leave it the same, or type G to generate random.- $defaultvalue: "$nocol""	
 		     read -e newvalue
                    done
                  fi
@@ -633,7 +632,7 @@ fi
                           break
                         fi
                      echo -e ""$red"Your password must have at least 8 characters and must not contain spaces"$nocol""
-                     echo -e -n ""$cyan" Please enter password or hit Enter to leave the default parameter or G to generate random password- $defaultvalue: "$nocol""   
+                     echo -e -n ""$cyan" Type new password, hit enter to leave it the same, or type G to generate random.- $defaultvalue: "$nocol""   
                      read -e newvalue
                    done
                  fi
@@ -688,7 +687,7 @@ done
 
 if [[ -d "$INSTALLDIR" ]] || [[ -d "$INSTALLDIR".git ]]
 then
-echo -e ""$cyan"you have directory at /var/wpms-stack or /var/wpms-stack.git, Ommitting git clone and bare repo installation step"$nocol""
+echo -e ""$cyan"There is already a directory at /var/wpms-stack or /var/wpms-stack.git, skipping git clone and bare repo installation step"$nocol""
 cd "$INSTALLDIR"/setup
 standardinstall
 installeverything
