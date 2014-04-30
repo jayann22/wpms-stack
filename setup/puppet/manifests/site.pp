@@ -45,7 +45,7 @@ wordpress::install-wp{"wordpress":
 	wp_mysql_port => $wrp_mysql_port,
 	wp_plugin_MU => $wrp_plugin_MU,
 	wp_subdomain => $wrp_subdomain,
-	module_path => "./puppet/modules",
+	module_path => $wrp_config_path,
 	wp_config_path => $wrp_config_path,
         mode => 0400,
         require => Notify['note-start-WP']

@@ -22,12 +22,12 @@ define wordpress::install-wp($wp_remote_location, $mode = 0644, $wp_localpath, $
       }
       
       exec{"wp-cli-install":
-        command => "/bin/cp $module_path/wordpress/files/wpcli /tmp/ \
+        command => "/bin/cp $module_path/../setup/puppet/modules/wordpress/files/wpcli /tmp/ \
     	&& if [ -f $wp_config_path/$wp_env-wp-config.php ]; then /bin/sed -i \"s/define( 'SUNRISE', 'on' );//g\" $wp_config_path/$wp_env-wp-config.php \
     		 && mv $wp_config_path\\/$wp_env-wp-config.php $wp_localpath/wp-config.php; \
-		 if [ $wp_subdomain == \"Yes\" ]; then /bin/cp $module_path/wordpress/templates/htaccesSubdomain.erb $wp_localpath/.htaccess; \
+		 if [ $wp_subdomain == \"Yes\" ]; then /bin/cp $module_path/../setup/puppet/modules/wordpress/templates/htaccesSubdomain.erb $wp_localpath/.htaccess; \
 		 /usr/bin/php /tmp/wpcli core multisite-install --subdomains --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; \
-		 else /bin/cp $module_path/wordpress/templates/htaccesSubfolder.erb $wp_localpath/.htaccess; \
+		 else /bin/cp $module_path/../setup/puppet/modules/wordpress/templates/htaccesSubfolder.erb $wp_localpath/.htaccess; \
 		 /usr/bin/php /tmp/wpcli core multisite-install --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; fi; \
 		 if [ $wp_plugin_MU == \"Yes\" ]; then /usr/bin/php /tmp/wpcli plugin install \"WordPress MU Domain Mapping\" --path=$wp_localpath; \
 		 /bin/mv $wp_localpath/wp-content/plugins/wordpress-mu-domain-mapping/sunrise.php $wp_localpath/wp-content/; \
@@ -35,16 +35,16 @@ define wordpress::install-wp($wp_remote_location, $mode = 0644, $wp_localpath, $
 	else rm -f $wp_localpath/wp-config.php; \
 		 /usr/bin/php /tmp/wpcli core config --path=$wp_localpath --dbname=$wp_dbname --dbuser=$wp_dbuser --dbpass=$wp_dbpass --dbhost=$wp_dbhost:$wp_mysql_port --dbprefix=$wp_db_prefix; \
 		 /usr/bin/php /tmp/wpcli db reset --path=$wp_localpath --yes; \
-		 if [ $wp_subdomain == \"Yes\" ]; then /bin/cp $module_path/wordpress/templates/htaccesSubdomain.erb $wp_localpath/.htaccess; \
+		 if [ $wp_subdomain == \"Yes\" ]; then /bin/cp $module_path/../setup/puppet/modules/wordpress/templates/htaccesSubdomain.erb $wp_localpath/.htaccess; \
 		 /usr/bin/php /tmp/wpcli core multisite-install --subdomains --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; \
-		 else /bin/cp $module_path/wordpress/templates/htaccesSubfolder.erb $wp_localpath/.htaccess; \
+		 else /bin/cp $module_path/../setup/puppet/modules/wordpress/templates/htaccesSubfolder.erb $wp_localpath/.htaccess; \
 		 /usr/bin/php /tmp/wpcli core multisite-install --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; fi; \
 		 if [ $wp_plugin_MU == \"Yes\" ]; then /usr/bin/php /tmp/wpcli plugin install \"WordPress MU Domain Mapping\" --path=$wp_localpath; \
 		 /bin/mv $wp_localpath/wp-content/plugins/wordpress-mu-domain-mapping/sunrise.php $wp_localpath/wp-content/; \
 		 /bin/sed -i \"/define('ABSPATH', dirname(__FILE__) . '\\/');/a define( 'SUNRISE', 'on' );\" $wp_localpath/wp-config.php; fi; \
 	    fi \
     	&& /bin/mv $wp_localpath/wp-config.php $wp_config_path\\/$wp_env-wp-config.php \
-    	&& /bin/cp $module_path/wordpress/templates/wp-config.erb $wp_localpath/wp-config.php \
+    	&& /bin/cp $module_path/../setup/puppet/modules/wordpress/templates/wp-config.erb $wp_localpath/wp-config.php \
 	&& /bin/chown -R $web_owner.$web_group $wp_localpath \
 	&& rm -fr /tmp/wpcli",
 	path => "/bin:/usr/bin",
