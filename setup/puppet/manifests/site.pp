@@ -66,4 +66,10 @@ Notify[note-install-finish-apache]->Mysql::Install-wp-mysql['mysqldb']->Notify['
     		fail("Unrecognized operating system") 
         }
  }
+   #this enables the command "papply" from within the vm which does a puppet apply 
+   file { '/usr/local/bin/papply':
+      content => "#!/bin/sh\nsudo puppet apply --modulepath=/var/wpms-stack/setup/puppet/modules/ /var/wpms-stack/setup/puppet/manifests/site.pp  $*",
+      mode    => 'a+x',
+   }
+    
 }
