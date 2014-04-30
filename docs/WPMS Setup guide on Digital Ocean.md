@@ -44,7 +44,8 @@ After successful installation, start the service and set the service to automati
 Now you can connect to mysql and set appropriate accounts by which wordpress installation script and web service will connect to database.Please note that Values in Red must be changed.
 
     mysql -e "create user 'ADMIN'@'10.128.%.%' identified by 'ROOTPASSWORD'"  
-    mysql -e "grant all privileges on *.* to  'ADMIN'@'10.128.%.%'with grant option" mysql -e "flush privileges" 
+    mysql -e "grant all privileges on *.* to  'ADMIN'@'10.128.%.%'with grant option" 
+    mysql -e "flush privileges" 
     mysql -e "flush hosts"
 
 where
