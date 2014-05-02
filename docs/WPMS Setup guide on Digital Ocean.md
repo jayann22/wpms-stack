@@ -4,10 +4,17 @@ This is step by step installation guide for wp multisite on Digital Ocean, with 
 Login to your Digital Ocean account and create 2 droplets, named e.g. wp-web and wp-db. In settings of each droplet mention following options.
 
 *1)	Select Region: New York 2*
- 
+
+![](https://raw.githubusercontent.com/Link7/wpms-stack/master/docs/images/region.png)
+
+
 *2)	Select Image: Linux Distributions => CentOS => CentOS 6.5 x64*
 
-*3)	Settings: Select your SSH key by which you will connect to droplets and mention Private Networkingoption.*
+![](https://raw.githubusercontent.com/Link7/wpms-stack/master/docs/images/Image.png)
+
+*3)	Settings: Select your SSH key by which you will connect to droplets and mention Private Networking option.*
+
+![](https://raw.githubusercontent.com/Link7/wpms-stack/master/docs/images/settings.png)
 
 Now you can create droplets and after creation we will continue installation process by connecting to droplets via ssh client.
 I assume that you have created droplets with hostnames 
@@ -17,6 +24,9 @@ and will continue guide using these names, but sure if you wish , you can set yo
 
 Choose your droplets on Digital Ocean interface and determine their private ip addresses.
 Write these ip addresses somewhere, because we will use them during installation.
+
+![](https://raw.githubusercontent.com/Link7/wpms-stack/master/docs/images/privateip.png)
+
 
  I will use 10.128.1.1 and 10.128.2.2 respectively for wp-web and wp-db.
 
