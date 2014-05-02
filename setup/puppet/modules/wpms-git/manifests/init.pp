@@ -41,7 +41,7 @@ class wpms-git {
 	}
 
 	exec { "git-auto-commit-files":
-		command => "git add --all && git commit -m 'autocommit'",
+		command => "git add --all && git commit -m 'puppet apply autocommit'",
 		cwd => "/var/wpms-stack/",
 		onlyif => "git status",
 		require => [ Exec["git-create-var-wpms-stack-repo"], File["/var/wpms-stack/.git/hooks/post-commit"] ],

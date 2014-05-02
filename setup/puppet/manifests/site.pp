@@ -16,11 +16,8 @@ Exec {
 include messages
 include apache
 
-if $id == 'vagrant' {
+if $virtual != 'virtualbox' {
 	include wpms-git
-	notify { 'note-vagrant':
-		message => 'VAGRANTVAGRANTVAGRANT',
-	}
 }
 
 
