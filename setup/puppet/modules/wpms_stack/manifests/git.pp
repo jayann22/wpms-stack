@@ -48,6 +48,7 @@ define wpms_stack::git() {
 		command => "git add --all && git commit -m 'puppet apply autocommit'",
 		cwd => "/var/wpms-stack/",
 		onlyif => "git status",
+		refreshonly => true,
 		require => [ Exec["git-create-var-wpms-stack-repo"], File["/var/wpms-stack/.git/hooks/post-commit"] ],
 	}
 
