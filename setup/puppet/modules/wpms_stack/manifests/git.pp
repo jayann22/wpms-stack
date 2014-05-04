@@ -4,10 +4,6 @@ define wpms_stack::git() {
 		ensure => installed,
 	}
 
-	notify { 'note-git-init':
-		message => 'GIT INIT',
-	}
-
 	# **CREDITS**
 	# The git-deploy workflow with the post-update & post-commit hooks is based on this blog post from Joe Maller: 
 	# http://joemaller.com/990/a-web-focused-git-workflow/
