@@ -10,5 +10,7 @@ define wpms_stack::wp() {
 	
 	file { "/var/wpms-stack/www/wpms-stack-plugin-instructions-for-puppet":
 		ensure => present,
+		owner => "apache",
+		group => "apache",
 	}
 }
