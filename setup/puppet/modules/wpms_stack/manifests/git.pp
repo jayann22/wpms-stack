@@ -1,4 +1,4 @@
-class wpms-git {
+define wpms_stack::git() {
 	
 	package { "git":
 		ensure => installed,
@@ -13,13 +13,13 @@ class wpms-git {
 	# http://joemaller.com/990/a-web-focused-git-workflow/
 	
 	file { "/var/wpms-stack.git/hooks/post-update":
-		source => "puppet:///modules/wpms-git/hub-post-update",
+		source => "puppet:///modules/wpms_stack/git/hub-post-update",
 		mode => "+x",
 		require => Exec["git-clone-bare-repo"],
 	}
 
 	file { "/var/wpms-stack/.git/hooks/post-commit":
-		source => "puppet:///modules/wpms-git/prime-post-commit",
+		source => "puppet:///modules/wpms_stack/git/prime-post-commit",
 		mode => "+x",
 		require => Exec["git-create-var-wpms-stack-repo"],
 	}

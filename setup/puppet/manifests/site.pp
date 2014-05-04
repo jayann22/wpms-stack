@@ -17,10 +17,12 @@ include messages
 include apache
 
 if $virtual != 'virtualbox' {
-	include wpms-git
+	wpms_stack::git{"git":}
+	wpms_stack::cron{"cron":}
 }
 
-include wpms-wp
+wpms_stack::wp{"wp":}
+
 
 
 mysql::install-wp-mysql{"mysqldb":
