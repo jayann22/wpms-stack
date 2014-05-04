@@ -67,7 +67,7 @@ function plugin_options_wpms_stack() {
 	$available_settings = array(
 		'git-commit-now' => array(
 			'name' => 'Commit to local git',
-			'explanation' => 'Puppet will do <code>git add --all && git commit -m "wpms-stack cron autocommit"</code> within 1 minute and uncheck this box again. (This doesn\'t do anything on Vagrant)',
+			'explanation' => 'A script on cron will execute <code>git add --all && git commit -m "wpms-stack cron autocommit"</code> within 1 minute and uncheck this box again. (This doesn\'t do anything on Vagrant)',
 			'value' => 'No',
 		),
 		'example' => array(
