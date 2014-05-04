@@ -7,6 +7,6 @@ cd /var/wpms-stack/
 git status
 
 git add --all
-git commit
+git commit -m "wpms-stack cron autocommit"
 
 sed -i 's/git-commit-now: Yes/git-commit-now: No/g' /var/wpms-stack/www/wpms-stack-plugin-instructions-for-puppet
