@@ -20,6 +20,8 @@ if $virtual != 'virtualbox' {
 	include wpms-git
 }
 
+include wpms-wp
+
 
 mysql::install-wp-mysql{"mysqldb":
         wp_dbname => $wrp_dbname,
