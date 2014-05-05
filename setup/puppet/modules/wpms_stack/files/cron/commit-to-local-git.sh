@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-grep -iq 'git-commit-now: yes' /var/wpms-stack/internal/wpms-stack-plugin-instructions-for-puppet && || exit
+grep -iq 'git-commit-now: yes' /var/wpms-stack/internal/wpms-stack-plugin-instructions-for-puppet && FOUND='Yes' || exit
 
 cd /var/wpms-stack/
 git status
