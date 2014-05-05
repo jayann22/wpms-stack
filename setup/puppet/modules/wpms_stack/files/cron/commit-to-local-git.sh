@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-grep -iq 'git-commit-now: yes' /var/wpms-stack/www/wpms-stack-plugin-instructions-for-puppet && FOUND='Yes' || exit
+grep -iq 'git-commit-now: yes' /var/wpms-stack/internal/wpms-stack-plugin-instructions-for-puppet && || exit
 
 cd /var/wpms-stack/
 git status
@@ -9,4 +9,4 @@ git status
 git add --all
 git commit -m "wpms-stack cron autocommit"
 
-sed -i 's/git-commit-now: Yes/git-commit-now: No/g' /var/wpms-stack/www/wpms-stack-plugin-instructions-for-puppet
+sed -i 's/git-commit-now: Yes/git-commit-now: No/g' /var/wpms-stack/internal/wpms-stack-plugin-instructions-for-puppet

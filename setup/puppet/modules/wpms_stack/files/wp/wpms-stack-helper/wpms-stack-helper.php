@@ -26,7 +26,7 @@ function plugin_menu_wpms_stack() {
 function update_setting_in_file($setting,$value) {
 	$new_config_array = array();
 
-	$instructions_file = ABSPATH.'../wpms-stack-plugin-instructions-for-puppet';
+	$instructions_file = ABSPATH.'../../internal/wpms-stack-plugin-instructions-for-puppet';
 	$current_config_array = read_instructions_file_into_array($instructions_file);
 	$new_config_array = $current_config_array;
 	$new_config_array[$setting] = $value;
@@ -35,7 +35,7 @@ function update_setting_in_file($setting,$value) {
 
 function read_instructions_file_into_array($file='default') {
 	if($file=='default') {
-		$file = ABSPATH.'../wpms-stack-plugin-instructions-for-puppet';
+		$file = ABSPATH.'../../internal/wpms-stack-plugin-instructions-for-puppet';
 	}
 	$instructions_array = array();
 	$instructions_file_lines = file($file);
