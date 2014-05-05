@@ -1,4 +1,4 @@
-#This script is intended for installation of mysql server for wpms stack installation
+#This script is intended for installation of mysql server for wpms stack installations
 
 #!/bin/bash
 
