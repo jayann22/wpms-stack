@@ -11,10 +11,11 @@ then
 source /etc/profile.d/wpms.sh
 fi
 
-nocol="\e[0m"
-red="\e[0;31m"
-green="\e[0;32m"
-cyan="\e[0;36m"
+nocol="\033[0m"
+red="\033[31m"
+green="\033[032m"
+cyan="\033[36m"
+
 # Make sure only root can run our script
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 1>&2

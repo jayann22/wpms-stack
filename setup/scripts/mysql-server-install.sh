@@ -5,10 +5,10 @@
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 TERM=linux
 
-nocol="\e\033[0m"
-red="\e\033[31m"
-green="\e\033[032m"
-cyan="\e[36m"
+nocol="\033[0m"
+red="\033[31m"
+green="\033[032m"
+cyan="\033[36m"
 
 config=".my.cnf.$$"
 command=".mysql.$$"
