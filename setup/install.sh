@@ -5,6 +5,7 @@
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 TERM=linux
 INSTALLDIR="/var/wpms-stack"
+SOURCEREPO="https://github.com/Link7/wpms-stack.git"
 
 if [[ -f /etc/profile.d/wpms.sh ]]
 then
@@ -22,13 +23,8 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-#This Function is crated for
-#1)Git Bare repository installation at /var/wpms-stack.git and 
-#2)Cloning of https://github.com/Link7/wpms-stack.git repository into /var/wpms-stack
-#3)Setting up hook scripts to keep update bare repository with working directory
-
-gitinstall ()
-{
+#Function to install the proper git package
+gitinstall () {
   if [[ ! `rpm -qa | grep rpmforge` ]]
   then
 
@@ -64,55 +60,12 @@ gitinstall ()
      exit 1
   fi
 
+}
 
-  # clone wpms-stack repo onto server
-  git clone --bare https://github.com/Link7/wpms-stack.git /var/wpms-stack.git
+#Function to clone git from source repository
+gitclone () {
 
-  # create location where repo will be checked out
-  git init /var/wpms-stack
-
-  # add server git repo as remote to checked out dir
-  cd /var/wpms-stack
-  git remote add hub /var/wpms-stack.git
-  git pull hub master
-
-
-
-  # setup git hooks
-
-  FILE="/var/wpms-stack.git/hooks/post-update"
-
-  /bin/cat <<EOM >$FILE
-  #!/bin/sh
-
-  echo
-  echo "**** Pulling changes into Prime [Hub's post-update hook]"
-  echo
-
-  cd /var/wpms-stack || exit
-  unset GIT_DIR
-  git pull hub master
-
-  exec git-update-server-info
-EOM
-
-  chmod +x $FILE
-
-
-  FILE="/var/wpms-stack/.git/hooks/post-commit"
-
-  /bin/cat <<EOM >$FILE
-
-  #!/bin/sh
-
-  echo
-  echo "**** pushing changes to Hub [Prime's post-commit hook]"
-  echo
-
-  git push hub
-EOM
-
-  chmod +x $FILE
+git clone $SOURCEREPO $INSTALLDIR
 
 }
 
@@ -175,7 +128,8 @@ installeverything () {
 
 
 	#Set symink which points to $WPMS-Environment-vars.pp . This link is included in file setup/puppet/modules/conf/init.pp as puppet configuration settings.
-	ln -fs "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp  /tmp/envinit.pp
+	mkdir /etc/wpms-stack
+	ln -fs "$INSTALLDIR"/configs/"$WPMS_ENVIRONMENT"-vars.pp  /etc/wpms-stack/envinit.pp
 
 
 	#Install wget
@@ -686,17 +640,9 @@ done
 #End of standardinstall function
 
 
-if [[ -d "$INSTALLDIR" ]] || [[ -d "$INSTALLDIR".git ]]
-then
-echo -e ""$cyan"There is already a directory at /var/wpms-stack or /var/wpms-stack.git, skipping git clone and bare repo installation step"$nocol""
-cd "$INSTALLDIR"/setup
-standardinstall
-installeverything
-else
 gitinstall
-cd "$INSTALLDIR"/setup
+gitclone
 standardinstall
 installeverything
-fi
 
 echo -e "\n\n"$cyan" You can push-pull from server repo through ssh \n server repo url is: ssh://root@SERVERIP:PORT"$INSTALLDIR".git"$nocol""

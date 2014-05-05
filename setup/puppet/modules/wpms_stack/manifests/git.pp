@@ -23,7 +23,7 @@ define wpms_stack::git() {
 	exec { "git-clone-bare-repo":
 		command => "git clone --bare https://github.com/Link7/wpms-stack.git /var/wpms-stack.git",
 		creates => "/var/wpms-stack.git",
-		path => "/var",
+		cwd => "/var",
 		require => Package["git"],
 	}
 	

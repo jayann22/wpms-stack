@@ -1,5 +1,3 @@
-#This script is intended for installation of mysql server for wpms stack installation
-
 #!/bin/bash
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -9,6 +7,7 @@ nocol="\033[0m"
 red="\033[31m"
 green="\033[032m"
 cyan="\033[36m"
+yellow="\033[33m"
 
 config=".my.cnf.$$"
 command=".mysql.$$"
@@ -265,22 +264,17 @@ set_remote_user_password() {
     if [ "$password1" = "" ]; then
         echo -e ""$cyan"Generating random password..."$nocol""
         password1=`randpw`
-		echo -e ""$cyan"Randomly generated password is \""$password1"\""$nocol""
+		echo -e ""$cyan"Randomly generated password is "$yellow"\""$password1"\""$nocol""
     fi
 
     esc_pass=`basic_single_escape "$password1"`
     do_query "UPDATE mysql.user SET Password=PASSWORD('$esc_pass') WHERE User='$remuser';"
     if [ $? -eq 0 ]; then
-        echo -e ""$cyan"Reloading privilege tables..."$nocol""
-        reload_privilege_tables
-		reload_hosts_tables
-		echo -e ""$cyan"Password updated successfully!"$nocol""
+        echo -e ""$cyan"Password updated successfully!"$nocol""
         echo -e
     else
         echo -e ""$red"Password update failed!"$nocol""
     fi
-
-    return 0
 }
 
 reload_privilege_tables() {
@@ -472,7 +466,7 @@ fi
 
 if [ $? -ne 0 ]; then
      echo -e ""$red"Failed to create user for remote access!"$nocol""
-     clean_and_exit
+	 clean_and_exit
 	 else
 	 set_remote_user_password
     fi
@@ -487,14 +481,9 @@ echo -e ""$cyan"Reloading the privilege tables will ensure that all changes made
 echo -e "will take effect immediately."$nocol""
 echo -e
 
-echo -e $echo_n ""$green"Reload privilege and hosts tables now? [Y/n]"$nocol"$echo_c"
-read reply
-if [ "$reply" = "n" ]; then
-    echo -e " "$cyan"... skipping."$nocol""
-else
     reload_privilege_tables
 	reload_hosts_tables
-fi
+
 echo -e
 
 cleanup
@@ -507,3 +496,4 @@ echo -e "installation should now be secure."
 echo -e
 echo -e "Thanks for using MySQL!"$nocol""
 echo -e
+
