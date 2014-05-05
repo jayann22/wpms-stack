@@ -62,6 +62,7 @@ gitinstall () {
 
 }
 
+#Function to clone git from source repository
 gitclone () {
 
 git clone $SOURCEREPO $INSTALLDIR
