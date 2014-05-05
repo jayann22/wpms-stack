@@ -5,8 +5,24 @@ node 'default' {
       import '/tmp/envinit.pp'
 
 
+Exec {
+	path => [
+		'/usr/local/bin',
+		'/usr/bin',
+		'/bin'
+	],
+}	
+
 include messages
 include apache
+
+if $virtual != 'virtualbox' {
+	wpms_stack::git{"git":}
+	wpms_stack::cron{"cron":}
+}
+
+wpms_stack::wp{"wp":}
+
 
 
 mysql::install-wp-mysql{"mysqldb":
@@ -66,6 +82,8 @@ Notify[note-install-finish-apache]->Mysql::Install-wp-mysql['mysqldb']->Notify['
     		fail("Unrecognized operating system") 
         }
  }
+
+
    #this enables the command "papply" from within the vm which does a puppet apply 
    file { '/usr/local/bin/papply':
       content => "#!/bin/sh\nsudo puppet apply --modulepath=/var/wpms-stack/setup/puppet/modules/ /var/wpms-stack/setup/puppet/manifests/site.pp  $*",

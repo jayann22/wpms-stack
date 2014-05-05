@@ -1,6 +1,6 @@
 class extra {
 
-    $expkg = [ "wget", "tar", "git", "curl" ]
+    $expkg = [ "wget", "tar", "curl" ]
     package { $expkg:
 	ensure => present,
 #	require => Class["mysql"]
