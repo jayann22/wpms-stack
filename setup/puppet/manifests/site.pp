@@ -2,7 +2,7 @@ node 'default' {
  case $operatingsystem {
       centos, redhat: { 
 #      import 'classes/*.pp'
-      import '/tmp/envinit.pp'
+      import '/etc/wpms-stack/envinit.pp'
 
 
 Exec {
