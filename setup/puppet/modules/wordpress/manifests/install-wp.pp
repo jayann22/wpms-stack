@@ -23,7 +23,7 @@ define wordpress::install-wp($wp_remote_location, $mode = 0644, $wp_localpath, $
       
       exec{"wp-cli-install":
         command => "/bin/cp $module_path/../setup/puppet/modules/wordpress/files/wpcli /tmp/ \
-    	&& if [ -f $wp_config_path/$wp_env-wp-config.php ]; then /bin/sed -i \"s/define( 'SUNRISE', 'on' );//g\" $wp_config_path/$wp_env-wp-config.php \
+    	&& if [ -f $wp_config_path/$wp_env-wp-config.php ]; then /bin/sed -i \"{:q;N;s/\\ndefine( 'SUNRISE', 'on' );//g;t q}\" $wp_config_path/$wp_env-wp-config.php \
     		 && mv $wp_config_path\\/$wp_env-wp-config.php $wp_localpath/wp-config.php; \
 		 if [ $wp_subdomain == \"Yes\" ]; then /bin/cp -n $module_path/../setup/puppet/modules/wordpress/templates/htaccesSubdomain.erb $wp_localpath/.htaccess; \
 		 /usr/bin/php /tmp/wpcli core multisite-install --subdomains --path=$wp_localpath --url=$wp_url --title=\"$wp_title\" --admin_user=$wp_admin_user --admin_password=$wp_admin_password --admin_email=$wp_admin_email; \
