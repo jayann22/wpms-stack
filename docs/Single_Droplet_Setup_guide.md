@@ -1,7 +1,7 @@
 This is step by step installation guide for wp multisite on single droplet Digital Ocean.
 ----------
 
-Login to your Digital Ocean account and create 2 droplets, named e.g. wp-web and wp-db. In settings of each droplet mention following options.
+Login to your Digital Ocean account and create 1 droplet, named e.g. wpms. In settings mention following options.
 
 *1)	Select Region: e.g. New York 2*
 
@@ -17,9 +17,8 @@ Login to your Digital Ocean account and create 2 droplets, named e.g. wp-web and
 ![](https://raw.githubusercontent.com/Link7/wpms-stack/master/docs/images/settings.png)
 
 Now you can create droplets and after creation we will continue installation process by connecting to droplets via ssh client.
-I assume that you have created droplet with hostname 
-1) wpms  
-and will continue guide using this name, but sure if you wish , you can set your hostname.
+
+I assume that you have created droplet with hostname ***wpms*** and will continue guide using this name, but sure if you wish , you can set your hostname.
 
 
 wp-multisite Installation
@@ -35,48 +34,45 @@ Connect to wp-web droplet via ssh with root user, and execute following two comm
 
 *2)	Proceed with setting values specific to your installation.*
 
-Following are the values which must be set during installation. The values in ***Bold-Italic*** must be changed during installation, in case if wpms must be installed with separate database server. I will not cover below  the other values, which will ask install.sh because they are environment specific. 
+I will not cover below all the values, which will ask install.sh, because the default values will work as well. 
+install.sh will provide comments for each value, I strongly recommend to read comments before selecting default values and please keep the passwords which will be generated randomly during install.sh.
 
-> Please answer Yes if the script shall create mysql database, mysql user for wordpress and grant accesses for the created user to wordpress database.
+***Following are the values which must be changed during installation.***
 
->(The default Value is "Yes"):***Yes***
+>PLease provide a name for your environment: ***Name***
 
-*(Set this to Yes , because we need to create wp user)*
+*(A name for you environment, such as production, or development, this name will be used to distinguish your various configuration files)*
 
-> Please answer Yes if the script shall install mysql-server.
-
->(The default Value is "Yes"):***No***
-
- *(Set this to NO, because we already have installed mysql)*
- 
-> Please provide the username which has privileges to grant accesses and create wp database on mysql server, e.g. root
-
->(The default Value is "root"):***ADMIN***
-
-*(The mysql super user, which we created on wp-db server)*
-
-> Please provide the password for mysql admin user.
-
->(The default Value is> ""):***ROOTPASSWORD***
-
-*(The password for mysql super-user on wp-db server)*
-
-> Please provide the hostname or ip address of mysql to which worpdress shall connect. 
-
->(The default Value is "localhost"):***10.128.2.2***
-
- *(The private ip address for wp-db server)*
 
 > Please provide database user for wordpress.
 
->(The default Value is "wp_user"): 
+>(The default Value is "wp_user"): ***some_username***
 
-*(The db user for wordpress, this can be leaved as default)*
+*(The db user for wordpress, please change this to one you prefer)*
 
-> Please provide the host from which the user will have access to database.  
 
->(The default Value is "localhost"):***10.128.%.%***
+>Please provide the main domain name of your WordPress Multisite installation . 
 
-*( Private network, from which db user for wordpress will have access to mysql db)*
+>(The default Value is "wpms-stack.local.link7.co"): ***your.domain.here***
+
+*(The hostname of you worpdress multisite, this will not be real domain, but one by which you will connect to your wordpress)*
+
+
+
+>Please provide email address of administrator account for WordPress .
+
+>(The default Value is "admin@localhost.dev"): ***admin@your.domain.here***
+
+*(The email address of wordpressadministrator )*
+
+
+
+>Please provide username of administrator account for wpms-stack .
+
+>(The default Value is "admin"): ***Admin username here***
+
+*(This is the username of administrator of your wordpress installation, please change this to one you prefer)*
+
 
 After you check/confirm the new settings, you will have installed wordpress multisite. 
+After finish , the installation will print your worpdress domain name, the wordpress administrator username and random generated password for administrator user. 
