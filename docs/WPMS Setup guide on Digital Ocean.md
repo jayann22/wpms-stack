@@ -44,7 +44,25 @@ Phase 1. Database Installation
 
 Connect to wp-db droplet via ssh , and install mysql-server 
 
-    yum -y install mysql-server
+You can install it automatically, using script or manually.
+
+***Automatic installation of mysql server with script***
+
+Login to your system as root or sudoer user and execute following commands
+
+     curl -I https://raw.githubusercontent.com/Link7/wpms-stack/master/setup/scripts/mysql-server-install.sh > install.sh
+     sudo bash install.sh
+     
+1)	Choose mysql user with root privileges, I chose ***Admin***
+
+2)	Choose password for Admin user, which must be specified during wordpress multisite stack installation: I chose ***ROOTPASSWORD***
+
+3)	Choose private network range of Digital Ocean in NY2: ***10.128.%.%*** 
+
+
+***Manual Installation of mysql server***
+
+     yum -y install mysql-server
 
 After successful installation, start the service and set the service to automatically start during boot.
 
