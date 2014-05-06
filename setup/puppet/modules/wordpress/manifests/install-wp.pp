@@ -54,7 +54,7 @@ define wordpress::install-wp($wp_remote_location, $mode = 0644, $wp_localpath, $
       
   exec{"get_web_${$tmppath}":
 
-	    command => "echo WP DOWNLOADED VIA WEB; \
+	    command => "echo DOWNLOADING WB VIA WEB....; \
 			$command \
 			&& /bin/tar -zxf $tmppath -C $wp_localpath --strip-components 1 \
 			&& /bin/rm -f $tmppath",
