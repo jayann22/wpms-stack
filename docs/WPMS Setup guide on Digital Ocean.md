@@ -50,7 +50,7 @@ You can install it automatically, using script or manually.
 
 Login to your system as root or sudoer user and execute following commands
 
-     curl -I https://raw.githubusercontent.com/Link7/wpms-stack/master/setup/scripts/mysql-server-install.sh > mysql-server-install.sh
+     curl https://raw.githubusercontent.com/Link7/wpms-stack/master/setup/scripts/mysql-server-install.sh > mysql-server-install.sh
      sudo bash mysql-server-install.sh
      
 1)	Choose mysql user with root privileges, I chose ***Admin***
